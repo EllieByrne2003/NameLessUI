@@ -104,6 +104,23 @@ int NLUI::Component::getHeight() const {
     return size.y;
 }
 
+void NLUI::Component::getPos(int &xPos, int &yPos) const {
+    xPos = pos.x;
+    yPos = pos.y;
+}
+
+ivec2 NLUI::Component::getPos() const {
+    return pos;
+}
+
+int NLUI::Component::getXPos() const {
+    return pos.x;
+}
+
+int NLUI::Component::getYPos() const {
+    return pos.y;
+}
+
 void NLUI::Component::setSize(const int width, const int height) {
     size.x = width;
     size.y = height;

@@ -98,6 +98,13 @@ namespace NLUI {
         int getWidth() const;
         int getHeight() const;
 
+        // Current position
+        void  getPos(int &xPos, int &yPos) const;
+        ivec2 getPos() const;
+
+        int getXPos() const;
+        int getYPos() const;
+
         // Resizing/positioning
         void setSize(const int width, const int height);
         void setSize(const ivec2 &size);
