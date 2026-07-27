@@ -238,8 +238,7 @@ void NLUI::FlowPane::resize() {
         if(useMinimum) {
             component->setSize(component->getMinimumSize());
         } else {
-            component->setSize(component->getMinimumSize());
-            // component->setSize(component->getPreferredSize());
+            component->setSize(component->getPreferredSize());
         }
     }
 
