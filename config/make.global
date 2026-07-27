@@ -14,8 +14,8 @@ CXX:= g++
 # compile flags
 
 # tool macros
-CFLAGS :=
-CXXFLAGS := -std=c++17 -g -O3 -Wunused -lglfw -lGL -lGLEW -limgui -DJSON_USE_IMPLICIT_CONVERSIONS=0
+CFLAGS := -fPIC -shared -L/usr/local/lib -lNLUT
+CXXFLAGS := -fPIC -shared -std=c++20 -g -O3 -Wunused -lglfw -lGL -lGLEW -limgui -DJSON_USE_IMPLICIT_CONVERSIONS=0 -L/usr/local/lib -lNLUT
 DBGFLAGS := -g -O3
 COBJFLAGS := $(CFLAGS) -c
 

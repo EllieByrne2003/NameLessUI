@@ -23,9 +23,9 @@ default: show-info all
 
 # non-phony targets
 $(TARGET): build-subdirs $(OBJS) find-all-objs 
-	# echo $(SOURCES)
-	@echo -e "\t" $(CXX) -fpic -shared $(SOURCES) -Iinclude -o $(TARGET)
-	@$(CXX) -fpic -shared $(SOURCES) -Iinclude -o $(TARGET)
+# 	@echo $(SOURCES)
+	@echo -e "\t" $(CXX) -fPIC -shared -std=c++20 $(SOURCES) -Iinclude -o $(TARGET)
+	@$(CXX) -fPIC -shared -std=c++20 $(SOURCES) -Iinclude -o $(TARGET)
 # 	@echo -e "\t" ar crf $@ $(SOURCES)
 # 	@ar crf $@ $(SOURCES)
 	# @rm -f $(ALL_OBJS)
