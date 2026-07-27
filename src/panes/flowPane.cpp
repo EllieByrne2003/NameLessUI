@@ -229,7 +229,7 @@ int NLUI::FlowPane::getPreferredHeight() const {
 }
 
 void NLUI::FlowPane::resize() {
-    const ivec2 currentSize   = getSize();
+    const ivec2 currentSize   = getSize(); 
     const ivec2 preferredSize = getPreferredSize();
 
     // Set sizes
@@ -238,9 +238,14 @@ void NLUI::FlowPane::resize() {
         if(useMinimum) {
             component->setSize(component->getMinimumSize());
         } else {
-            component->setSize(component->getPreferredSize());
+            component->setSize(component->getMinimumSize());
+            // component->setSize(component->getPreferredSize());
         }
     }
+
+    const ivec2 currentPos = getPos();
+    const int  &x          = currentPos.x;
+    const int  &y          = currentPos.y;
 
     // Arrange in rows/columns
     if(orientation == Orientation::Horizontal) {
@@ -255,7 +260,7 @@ void NLUI::FlowPane::resize() {
             }
 
             // Give component it's x value
-            component->setXPos(currentRowWidth);
+            component->setXPos(x + currentRowWidth);
 
             // Add current component to currentRow, adjust values
             std::pair<std::vector<Component *>, int> &currentRow = rows.back();
@@ -271,7 +276,7 @@ void NLUI::FlowPane::resize() {
             currentHeight -= row.second;
 
             for(Component *const component : row.first) {
-                component->setYPos(currentHeight);
+                component->setYPos(y + currentHeight);
             }
         }
     } else if(orientation == Orientation::Vertical) {
@@ -286,7 +291,7 @@ void NLUI::FlowPane::resize() {
             }
 
             // Give component it's y value
-            component->setYPos(currentColumnHeight);
+            component->setYPos(y + currentColumnHeight);
 
             // Add current component to currentColumn, adjust values
             std::pair<std::vector<Component *>, int> &currentColumn = columns.back();
@@ -300,7 +305,7 @@ void NLUI::FlowPane::resize() {
         int currentWidth = 0;
         for(std::pair<std::vector<Component *>, int> &column : columns) {
             for(Component *const component : column.first) {
-                component->setXPos(currentWidth);
+                component->setXPos(x + currentWidth);
             }
 
             currentWidth += column.second;
