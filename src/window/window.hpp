@@ -22,6 +22,9 @@ using Logger = NLUT::Logger;
 #include "../listeners/mouseMotionListener.hpp"
 #include "../listeners/mouseScrollListener.hpp"
 
+#include "../component/component.hpp"
+#include "../container/container.hpp"
+
 // Forward declarations
 struct GLFWwindow;
 
@@ -29,7 +32,7 @@ struct GLFWwindow;
 
 // Mostly a wrapper for glfw
 namespace NLUI {
-    class Window final {
+    class Window final : public Container {
     private:
         GLFWwindow *const window;
 
@@ -48,18 +51,26 @@ namespace NLUI {
         std::vector<MouseMotionListener *> mouseMotionListeners;
         std::vector<MouseScrollListener *> mouseScrollListeners;
 
+        // Given component
+        Component *component = nullptr;
+
     protected:
 
     public:
+        // TODO make this private
         Window(GLFWwindow *const window, const int windowedX, const int windowedY, const int windowedWidth, const int windowedHeight);
         ~Window();
 
+        // TODO add one to not need json
+        static Window * createWindow(Logger &logger, const std::string &title, const bool fullscreen, const int width, const int height);
         static Window * readWindow(Logger &logger, const json &jsonWindow, const std::filesystem::path &dirPath);
         static Window * readWindow(Logger &logger, const std::filesystem::path &path);
 
-        // Needed for drawing
+        // Needed for drawing // TODO move these two into private?
         void startDrawing();
         void finishDrawing();
+
+        void draw();
 
         // void makeCurrentWindow();
         // void swapBuffers();
@@ -112,5 +123,11 @@ namespace NLUI {
 
         // Handle closure
         bool shouldClose() const;
+
+        // Setting component
+        void setComponent(Component *component);
+
+        // Override from Container
+        virtual void removeComponent(Component *component) override;
     };
 };

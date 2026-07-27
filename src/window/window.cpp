@@ -2,6 +2,7 @@
 
 // Includes from standard
 #include <fstream>
+#include <glm/ext/matrix_clip_space.hpp>
 #include <mutex>
 
 // Includes from third party libraries
@@ -10,6 +11,9 @@
 #include <GLFW/glfw3.h>
 
 // Includes from personal libraries
+#include <NLUT/windows/glfw.hpp>
+#include <NLUT/gl/glew.hpp>
+
 #include <NLUT/logger/logger.hpp>
 using Logger = NLUT::Logger;
 
@@ -17,6 +21,7 @@ using Logger = NLUT::Logger;
 constexpr static auto getPath = NLUT::getPath;
 
 // Includes from project
+#include "../graphics/shaders.hpp"
 
 // Forward declarations
 bool intialiseGLFW(Logger &logger);
@@ -35,7 +40,7 @@ void key_callback(GLFWwindow *window, const int key, const int scancode, const i
 
 // Type aliases
 
-std::mutex contextMutex;
+static std::mutex contextMutex;
 
 NLUI::Window::Window(GLFWwindow *const window, const int windowedX, const int windowedY, const int windowedWidth, const int windowedHeight) : 
     window(window), windowedX(windowedX), windowedY(windowedY), windowedWidth(windowedWidth), windowedHeight(windowedHeight) {
@@ -55,6 +60,42 @@ NLUI::Window::Window(GLFWwindow *const window, const int windowedX, const int wi
 
 NLUI::Window::~Window() {
     glfwDestroyWindow(window);
+}
+
+NLUI::Window * NLUI::Window::createWindow(Logger &logger, const std::string &title, const bool fullscreen, const int width, const int height) {
+    // Initialise GLFW
+    if(!NLUT::intialiseGLFW(logger)) {
+        return nullptr;
+    }
+
+    // Get monitor and modes
+    GLFWmonitor       *monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode *mode    = glfwGetVideoMode(monitor);
+
+    // Create glfwWindow
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow *window = glfwCreateWindow(fullscreen ? mode->width : width, fullscreen ? mode->height : height, title.c_str(), fullscreen ? monitor : nullptr, nullptr);
+
+    if(!window) {
+        logger.addError("Failed to create GLFWwindow.");
+    }
+
+    // Initialise GLEW
+    if(!NLUT::initialiseGLEW(logger, window)) {
+        glfwDestroyWindow(window);
+        return nullptr;
+    }
+
+    // Initialise shaders
+    if(!Graphics::initialiseShaders(logger)) {
+        glfwDestroyWindow(window);
+        return nullptr;
+    }
+
+    // Return window
+    return new Window(window, 0, 0, width, height);
 }
 
 NLUI::Window * NLUI::Window::readWindow(Logger &logger, const json &jsonWindow, const std::filesystem::path &dirPath) {
@@ -96,32 +137,39 @@ NLUI::Window * NLUI::Window::readWindow(Logger &logger, const json &jsonWindow, 
         // Get title
         const std::string &title = jsonTitle.get<std::string>();
 
-        // Initialise GLFW
-        if(!intialiseGLFW(logger)) {
-            return nullptr;
-        }
+        return createWindow(logger, title, fullscreen, width, height);
+        // // Initialise GLFW
+        // if(!intialiseGLFW(logger)) {
+        //     return nullptr;
+        // }
 
-        // Get monitor and modes
-        GLFWmonitor       *monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode *mode    = glfwGetVideoMode(monitor);
+        // // Get monitor and modes
+        // GLFWmonitor       *monitor = glfwGetPrimaryMonitor();
+        // const GLFWvidmode *mode    = glfwGetVideoMode(monitor);
 
-        // Create glfwWindow
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        GLFWwindow *window = glfwCreateWindow(fullscreen ? mode->width : width, fullscreen ? mode->height : height, title.c_str(), fullscreen ? monitor : nullptr, nullptr);
+        // // Create glfwWindow
+        // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        // GLFWwindow *window = glfwCreateWindow(fullscreen ? mode->width : width, fullscreen ? mode->height : height, title.c_str(), fullscreen ? monitor : nullptr, nullptr);
 
-        if(!window) {
-            logger.addError("Failed to create GLFWwindow.");
-        }
+        // if(!window) {
+        //     logger.addError("Failed to create GLFWwindow.");
+        // }
 
-        // Initialise GLEW
-        if(!initialiseGLEW(logger, window)) {
-            glfwDestroyWindow(window);
-            return nullptr;
-        }
+        // // Initialise GLEW
+        // if(!initialiseGLEW(logger, window)) {
+        //     glfwDestroyWindow(window);
+        //     return nullptr;
+        // }
 
-        // Return window
-        return new Window(window, 0, 0, width, height);
+        // // Initialise shaders
+        // if(!Graphics::initialiseShaders(logger)) {
+        //     glfwDestroyWindow(window);
+        //     return nullptr;
+        // }
+
+        // // Return window
+        // return new Window(window, 0, 0, width, height);
     } catch(const json::exception& e) {
         logger.addConversionError(e, jsonWindow, "Failed to load window.");
 
@@ -154,9 +202,17 @@ void NLUI::Window::startDrawing() {
 
     glfwMakeContextCurrent(window);
 
+    // Set opengl options
+    glDisable(GL_DEPTH_TEST);
+
     // Properly size viewport (handles resizing of window and viewport)
     ivec2 frameBufferSize = getFrameBufferSize();
     glViewport(0, 0, frameBufferSize.x, frameBufferSize.y);
+
+    // TODO pass matrices for other shaders too
+    // Pass uniforms for all
+    mat4 mvp = glm::ortho(0.0f, (float) frameBufferSize.x, 0.0f, (float) frameBufferSize.y, -1.0f, 1.0f);
+    Graphics::passSolidMVP(mvp);
 }
 
 void NLUI::Window::finishDrawing() {
@@ -164,6 +220,17 @@ void NLUI::Window::finishDrawing() {
 
     // Left others claim the context now that we're done
     contextMutex.unlock();
+}
+
+void NLUI::Window::draw() {
+    startDrawing();
+    clear(); // TODO only do this sometimes
+
+    if(component != nullptr) {
+        component->draw();
+    }
+
+    finishDrawing();
 }
 
 // void NLUI::Window::makeCurrentWindow() {
@@ -388,6 +455,35 @@ int NLUI::Window::getFrameBufferHeight() const {
 
 bool NLUI::Window::shouldClose() const {
     return glfwWindowShouldClose(window);
+}
+
+// TODO should this delete the current content or not?
+void NLUI::Window::setComponent(Component *component) {
+    if(this->component != nullptr) {
+        this->component->removeParent();
+    }
+
+    if(component == nullptr) {
+        this->component = component;
+        return;
+    }
+
+    component->setParent(this);
+    this->component = component;
+
+    // TODO handle minimum sizes
+    const ivec2 minimumSize = component->getMinimumSize();
+    glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+    component->setPos(0, 0);
+    component->setSize(this->getFrameBufferSize());
+}
+
+void NLUI::Window::removeComponent(Component *component) {
+    if(component != nullptr && this->component == component) {
+        this->component = nullptr;
+        component->removeParent();
+    }
 }
 
 bool intialiseGLFW(Logger &logger) {
