@@ -99,6 +99,7 @@ bool NLUI::Graphics::solidShaderInitialised() {
 }
 
 void NLUI::Graphics::passSolidMVP(const mat4 &mvp) {
+    glUseProgram(programID);
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &mvp[0][0]);
 }
 
