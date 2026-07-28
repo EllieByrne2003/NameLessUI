@@ -36,6 +36,8 @@ void mouse_scroll_callback(GLFWwindow *window, const double xOffset, const doubl
 
 void key_callback(GLFWwindow *window, const int key, const int scancode, const int action, const int mods);
 
+void window_size_callback(GLFWwindow* window, int width, int height);
+
 // TODO handle dynamic resizes
 
 // Type aliases
@@ -56,6 +58,8 @@ NLUI::Window::Window(GLFWwindow *const window, const int windowedX, const int wi
 
     glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, GLFW_TRUE); // Want to know if caps or num lock is set
     glfwSetKeyCallback(window, key_callback);
+
+    glfwSetWindowSizeCallback(window, window_size_callback);
 }
 
 NLUI::Window::~Window() {
@@ -337,6 +341,13 @@ void NLUI::Window::mouseScrolled(const double deltaX, const double deltaY) {
     }
 }
 
+void NLUI::Window::windowResized(const int width, const int height) {
+    if(component != nullptr) {
+        component->setSize(width, height);
+        component->resize();
+    }
+}
+
 void NLUI::Window::addKeyListener(KeyListener *keyListener) {
     keyListeners.push_back(keyListener);
 }
@@ -474,15 +485,30 @@ void NLUI::Window::setComponent(Component *component) {
     // TODO handle minimum sizes
     const ivec2 minimumSize = component->getMinimumSize();
     glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowSize(window, minimumSize.x, minimumSize.y);
 
     component->setPos(0, 0);
     component->setSize(this->getFrameBufferSize());
+    component->resize();
 }
 
 void NLUI::Window::removeComponent(Component *component) {
     if(component != nullptr && this->component == component) {
         this->component = nullptr;
         component->removeParent();
+    }
+}
+
+void NLUI::Window::validate() {
+    if(component != nullptr) {
+        const ivec2 minimumSize = component->getMinimumSize();
+
+        // Ensure the component can fit in the space provided
+        glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+        // Call Give it the space it has and call resize
+        component->setSize(getFrameBufferSize());
+        component->resize();
     }
 }
 
@@ -568,4 +594,10 @@ void key_callback(GLFWwindow *window, const int key, const int scancode, const i
     } else if(action == GLFW_RELEASE) {
         w->keyReleased(key);
     }
+}
+
+void window_size_callback(GLFWwindow* window, int width, int height) {
+    NLUI::Window *w = (NLUI::Window *) glfwGetWindowUserPointer(window);
+
+    w->windowResized(width, height);
 }

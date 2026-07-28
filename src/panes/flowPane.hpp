@@ -98,6 +98,10 @@ namespace NLUI {
         void addComponent(Component *component); // TODO one to remove it
 
         // Override from Container
+        // handle removal
         virtual void removeComponent(Component *component) override;
+
+        // Handle children changing sizes
+        virtual void validate() override;
     };
 };

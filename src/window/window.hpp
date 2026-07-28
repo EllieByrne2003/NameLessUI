@@ -93,6 +93,9 @@ namespace NLUI {
         void mouseReleased(const int key);
         void mouseScrolled(const double deltaX, const double deltaY);
 
+        // Window state changes
+        void windowResized(const int width, const int height);
+
         // Event listener handling 
         // TODO Add methods to remove them
         void addKeyListener(KeyListener *keyListener);
@@ -128,6 +131,10 @@ namespace NLUI {
         void setComponent(Component *component);
 
         // Override from Container
+        // handle removal
         virtual void removeComponent(Component *component) override;
+
+        // Handle children changing sizes
+        virtual void validate() override;
     };
 };

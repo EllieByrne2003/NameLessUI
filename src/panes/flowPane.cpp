@@ -446,6 +446,9 @@ bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
 void NLUI::FlowPane::addComponent(Component *component) {
     component->setParent(this);
     components.push_back(component);
+
+    // Validate size and components
+    validate();
 }
 
 void NLUI::FlowPane::removeComponent(Component *component) {
@@ -461,5 +464,39 @@ void NLUI::FlowPane::removeComponent(Component *component) {
     
         components.erase(position);
         component->removeParent();
+
+        // Validate size and components
+        validate();
+    }
+}
+
+void NLUI::FlowPane::validate() {
+    const ivec2 currentSize   = getSize(); 
+    const ivec2 minimumSize   = getMinimumSize();
+    const ivec2 preferredSize = getPreferredSize();
+
+    // Check if we have all the space needed already
+    bool fitMinimum   = minimumSize.x   <= currentSize.x && minimumSize.y   <= currentSize.y;
+    bool fitPreferred = preferredSize.x <= currentSize.x && preferredSize.y <= currentSize.y;
+
+    // Can't fit, inform parent
+    if(!fitMinimum && !fitPreferred) {
+        validateParent();
+    } else {
+        // Fits but maybe the child components need more space
+        for(const Component *const component : components) {
+            const ivec2 compCurrentSize   = component->getSize(); 
+            const ivec2 compMinimumSize   = component->getMinimumSize();
+            const ivec2 compPreferredSize = component->getPreferredSize();
+
+            bool compFitMinimum   = compMinimumSize.x   <= compCurrentSize.x && compMinimumSize.y   <= compCurrentSize.y;
+            bool compFitPreferred = compPreferredSize.x <= compCurrentSize.x && compPreferredSize.y <= compCurrentSize.y;
+
+            // Component too small, call resize (this will fix all so break too)
+            if(!compFitMinimum && !compFitPreferred) {
+                resize();
+                break;
+            }
+        }
     }
 }

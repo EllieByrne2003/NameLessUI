@@ -72,6 +72,10 @@ namespace NLUI {
         // virtual bool mouseInside(const double xPos, const double yPos) override;
 
         // Override from Container
-        // virtual void removeComponent(Component *) override;
+        // handle removal
+        // virtual void removeComponent(Component *component) override;
+
+        // Handle children changing sizes
+        // virtual void validate() override;
     };
 };

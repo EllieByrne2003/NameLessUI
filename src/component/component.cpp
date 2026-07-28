@@ -48,6 +48,12 @@ void NLUI::Component::removeParent() {
     }
 }
 
+void NLUI::Component::validateParent() {
+    if(parent != nullptr) {
+        parent->validate();
+    }
+}
+
 void NLUI::Component::draw() const {
     // TODO implement, accumulate the vertices
     Graphics::drawSolidQuad(backgroundColour, pos, size);
@@ -73,18 +79,30 @@ int NLUI::Component::getMinimumHeight() const {
 void NLUI::Component::setMinimumSize(const int minimumWidth, const int minimumHeight) {
     minimumSize.x = minimumWidth;
     minimumSize.y = minimumHeight;
+
+    // Validate parent can fit with new minimums
+    validateParent();
 }
 
 void NLUI::Component::setMinimumSize(const ivec2 &minimumSize) {
     this->minimumSize = minimumSize;
+
+    // Validate parent can fit with new minimums
+    validateParent();
 }
 
 void NLUI::Component::setMinimumWidth(const int minimumWidth) {
     minimumSize.x = minimumWidth;
+
+    // Validate parent can fit with new minimums
+    validateParent();
 }
         
 void NLUI::Component::setMinimumHeight(const int minimumHeight) {
     minimumSize.y = minimumHeight;
+
+    // Validate parent can fit with new minimums
+    validateParent();
 }
 
 void NLUI::Component::getSize(int &width, int &height) const {

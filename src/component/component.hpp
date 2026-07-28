@@ -44,6 +44,8 @@ namespace NLUI {
 
         void setParent(Container *parent);
         void removeParent();
+        
+        void validateParent();
 
 
         // static Component * readComponent(Logger &logger, const json &jsonComponent, const std::filesystem::path &dirPath);
