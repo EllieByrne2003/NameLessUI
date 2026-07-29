@@ -51,7 +51,7 @@ namespace NLUI {
 
     public:
         FlowPane(); // TODO make this protected? Or private
-        ~FlowPane();
+        virtual ~FlowPane() override;
 
         // Overridden from Component
         virtual void draw() const override;
@@ -83,7 +83,7 @@ namespace NLUI {
         // virtual int getPreferredWidth(const int availableWidth) const override;
         // virtual int getPreferredHeight(const int availableHeight) const override;
 
-        virtual void getPreferredSize(int &minimumWidth, int &minimumHeight) const override;
+        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const override;
         virtual ivec2 getPreferredSize() const override;
 
         virtual int getPreferredWidth() const override;

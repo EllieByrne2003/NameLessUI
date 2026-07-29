@@ -436,6 +436,12 @@ void NLUI::FlowPane::resize() {
 
 bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
     if(Pane::mouseInside(xPos, yPos)) {
+        for(Component *const component : components) {
+            if(component->mouseInside(xPos, yPos)) {
+                focus = component;
+                break; // Can only be one anyways
+            }
+        }
 
         return true;
     } else {
