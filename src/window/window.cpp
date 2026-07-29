@@ -199,7 +199,7 @@ NLUI::Window * NLUI::Window::readWindow(Logger &logger, const std::filesystem::p
         return nullptr;
     }
 }
- 
+
 void NLUI::Window::startDrawing() {
     // Only one context, need to wait our turn
     contextMutex.lock();
