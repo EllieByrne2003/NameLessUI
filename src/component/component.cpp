@@ -65,7 +65,7 @@ void NLUI::Component::getMinimumSize(int &minimumWidth, int &minimumHeight) cons
 }
 
 ivec2 NLUI::Component::getMinimumSize() const {
-    return minimumSize;
+    return ivec2(getMinimumWidth(), getMinimumHeight());
 }
 
 int NLUI::Component::getMinimumWidth() const {

@@ -87,7 +87,7 @@ namespace NLUI {
         // virtual int getPreferredWidth(const int availableWidth) const = 0;
         // virtual int getPreferredHeight(const int availableHeight) const = 0;
 
-        virtual void getPreferredSize(int &minimumWidth, int &minimumHeight) const = 0;
+        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const = 0;
         virtual ivec2 getPreferredSize() const = 0;
 
         virtual int getPreferredWidth() const = 0;
