@@ -1,10 +1,15 @@
 Containers should handle listeners
 
+Make the switch to shared pointers
+
+Focus should be a thing for containers?
+Redo mouseInside stuff
+
+Cache min, pref and max sizes on resize to reduce calculation
+
 Create functions to remove listener functions
 
-All components should have events passed, can override as they like
-
-Implement gridPanes
+All components should have events passed, can override as they like    (Should be called propagate or something)
 
 Implement textboxes
 
