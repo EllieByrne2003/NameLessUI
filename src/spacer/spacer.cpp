@@ -36,13 +36,12 @@ ivec2 NLUI::Spacer::getPreferredSize() const {
 }
 
 int NLUI::Spacer::getPreferredWidth() const {
-    return preferredSize.y;
+    return preferredSize.x;
 }
 
 int NLUI::Spacer::getPreferredHeight() const {
     return preferredSize.y;
 }
-
 
 void NLUI::Spacer::resize() {
 
