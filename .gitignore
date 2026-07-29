@@ -66,6 +66,4 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
-examples/bin/basic-flowPane
-examples/bin/basic-window
-src/component/component.cpp
+examples/bin/*
