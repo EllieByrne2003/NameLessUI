@@ -68,3 +68,4 @@ Testing/
 .cache/
 examples/bin/basic-flowPane
 examples/bin/basic-window
+src/component/component.cpp
