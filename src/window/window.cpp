@@ -84,6 +84,7 @@ NLUI::Window * NLUI::Window::createWindow(Logger &logger, const std::string &tit
 
     if(!window) {
         logger.addError("Failed to create GLFWwindow.");
+        return nullptr;
     }
 
     // Initialise GLEW
