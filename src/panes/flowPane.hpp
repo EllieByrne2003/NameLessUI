@@ -1,6 +1,7 @@
 #pragma once
 
 // Includes from standard
+#include <memory>
 #include <vector>
 
 // Includes from third party libraries
@@ -40,18 +41,27 @@ namespace NLUI {
 
     class FlowPane : public Pane {
     private:
-        std::vector<Component *> components;
+        std::vector<std::shared_ptr<Component>> components;
 
         // TODO make funtions to set these
-        Orientation orientation = Orientation::Horizontal;
+        Orientation orientation;
         // vAlignment  vAlignment  = vAlignment::Top;
         // hAlignment  hAlignment  = hAlignment::Left;
 
     protected:
 
     public:
-        FlowPane(); // TODO make this protected? Or private
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
+        FlowPane(const Orientation orientation, const glm::ivec2 &minSize, const glm::ivec2 &maxSize);
+
+    public:
         virtual ~FlowPane() override;
+
+        static std::shared_ptr<FlowPane> create(const Orientation orientation = Orientation::Horizontal, const glm::ivec2 &minSize = glm::ivec2(0, 0), const glm::ivec2 &maxSize = glm::ivec2(INT_MAX, INT_MAX));
 
         // Overridden from Component
         virtual void draw() const override;
@@ -95,11 +105,12 @@ namespace NLUI {
         virtual bool mouseInside(const double xPos, const double yPos) override;
 
         // New functions
-        void addComponent(Component *component); // TODO one to remove it
+        void addComponent(const std::shared_ptr<Component> &component);
 
         // Override from Container
         // handle removal
-        virtual void removeComponent(Component *component) override;
+        virtual void removeComponent(const std::shared_ptr<Component> &component) override;
+        virtual void removeComponent(Component *const component) override;
 
         // Handle children changing sizes
         virtual void validate() override;

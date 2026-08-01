@@ -1,7 +1,7 @@
 #pragma once
 
 // Includes from standard
-
+#include <memory>
 
 // Includes from third party libraries
 
@@ -25,10 +25,18 @@ namespace NLUI {
     protected:
 
     public:
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
+
+    public:
         virtual ~Container() = 0;
 
         // Handle removal
-        virtual void removeComponent(Component *component) = 0;
+        virtual void removeComponent(const std::shared_ptr<Component> &component) = 0;
+        virtual void removeComponent(Component *const component) = 0;
 
         // Handle children changing size
         virtual void validate() = 0;

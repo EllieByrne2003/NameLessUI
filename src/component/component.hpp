@@ -1,9 +1,7 @@
 #pragma once
 
 // Includes from standard
-#include <filesystem>
-#include <memory>
-#include <limits>
+
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
@@ -28,7 +26,8 @@ namespace NLUI {
     private:
         Container *parent = nullptr;
 
-        glm::ivec2 minimumSize = glm::ivec2(0, 0);
+        glm::ivec2 minimumSize;
+        glm::ivec2 maxSize; // TODO add functions to change this
 
         glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -37,7 +36,14 @@ namespace NLUI {
         glm::ivec2 size;
 
     public:
-        Component();
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
+        Component(const glm::ivec2 &minSize, const glm::ivec2 &maxSize);
+
+    public:
         virtual ~Component() = 0;
 
         void setParent(Container *parent);

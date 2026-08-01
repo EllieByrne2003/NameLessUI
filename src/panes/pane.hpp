@@ -1,7 +1,7 @@
 #pragma once
 
 // Includes from standard
-#include <vector>
+#include <memory>
 
 // Includes from third party libraries
 
@@ -24,10 +24,17 @@ namespace NLUI {
     private:
 
     protected:
-        Component *focus = nullptr;
+        std::shared_ptr<Component> focus = nullptr;
 
     public:
-        Pane();
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
+        Pane(const glm::ivec2 &minSize, const glm::ivec2 &maxSize);
+
+    public:
         virtual ~Pane() = 0;
 
         // Overridden from Component

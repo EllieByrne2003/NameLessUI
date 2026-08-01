@@ -21,20 +21,22 @@ using namespace glm;
 
 
 
-NLUI::FlowPane::FlowPane() {
+NLUI::FlowPane::FlowPane(Orientation orientation, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Pane(minSize, maxSize),
+    orientation(orientation) {
 
 }
 
 NLUI::FlowPane::~FlowPane() {
-    for(const Component *const component : components) {
-        delete component;
-    }
+}
+
+std::shared_ptr<NLUI::FlowPane> NLUI::FlowPane::create(const Orientation orientation, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) {
+    return std::shared_ptr<FlowPane>(new FlowPane(orientation, minSize, maxSize));
 }
 
 void NLUI::FlowPane::draw() const {
     Pane::draw();
 
-    for(const Component *const component : components) {
+    for(const std::shared_ptr<const Component> &component : components) {
         component->draw();
     }
 }
@@ -53,7 +55,7 @@ int NLUI::FlowPane::getMinimumWidth() const {
 
     if(orientation == Orientation::Horizontal) {
         // Largest of sums
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const int componentMinimumWidth = component->getMinimumWidth();
 
             if(componentMinimumWidth > minimumWidth) {
@@ -68,7 +70,7 @@ int NLUI::FlowPane::getMinimumWidth() const {
         int currentColumnHeight    = 0;
         int currentColumnMaxWidth  = 0;
 
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const ivec2 componentMinimumSize = component->getMinimumSize();
 
             if(currentColumnHeight + componentMinimumSize.y > minimumHeight) {
@@ -107,7 +109,7 @@ int NLUI::FlowPane::getMinimumHeight() const {
         int currentRowWidth         = 0;
         int currentRowMaximumHeight = 0;
 
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const ivec2 componentMinimumSize = component->getMinimumSize();
 
             if(currentRowWidth + componentMinimumSize.x > minimumWidth) {
@@ -123,7 +125,7 @@ int NLUI::FlowPane::getMinimumHeight() const {
         minimumHeight += currentRowMaximumHeight;
     } else if (orientation == Orientation::Vertical) {
         // Largest of sums
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const int componentMinimumHeight = component->getMinimumHeight();
 
             if(componentMinimumHeight > minimumHeight) {
@@ -186,12 +188,12 @@ int NLUI::FlowPane::getPreferredWidth() const {
 
     if(orientation == Orientation::Horizontal) {
         // Sum of components
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             preferredWidth += component->getPreferredWidth();
         }
     } else if(orientation == Orientation::Vertical) {
         // Largest of components
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const int componentPreferredWidth = component->getPreferredWidth();
 
             if(componentPreferredWidth > preferredWidth) {
@@ -210,7 +212,7 @@ int NLUI::FlowPane::getPreferredHeight() const {
 
     if(orientation == Orientation::Horizontal) {
         // Largest of components
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const int componentPreferredHeight = component->getPreferredHeight();
 
             if(componentPreferredHeight > preferredHeight) {
@@ -219,7 +221,7 @@ int NLUI::FlowPane::getPreferredHeight() const {
         }
     } else if(orientation == Orientation::Vertical) {
         // Sum of components
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             preferredHeight += component->getPreferredHeight();
         }
     } else {
@@ -235,7 +237,7 @@ void NLUI::FlowPane::resize() {
 
     // Set sizes
     bool useMinimum = preferredSize.x > currentSize.x || preferredSize.y > currentSize.y;
-    for(Component *const component : components) {
+    for(const std::shared_ptr<Component> &component : components) {
         if(useMinimum) {
             component->setSize(component->getMinimumSize());
         } else {
@@ -249,10 +251,10 @@ void NLUI::FlowPane::resize() {
 
     // Arrange in rows/columns
     if(orientation == Orientation::Horizontal) {
-        std::vector<std::pair<std::vector<Component *>, int>> rows = { { { }, 0 } }; // Load with empty row
+        std::vector<std::pair<std::vector<std::shared_ptr<Component>>, int>> rows = { { { }, 0 } }; // Load with empty row
 
         int currentRowWidth = 0;
-        for(Component *const component : components) {
+        for(const std::shared_ptr<Component> &component : components) {
             // Skip to next row if not enough width available
             if(currentRowWidth + component->getWidth() > currentSize.x) {
                 currentRowWidth = 0;
@@ -263,7 +265,7 @@ void NLUI::FlowPane::resize() {
             component->setXPos(x + currentRowWidth);
 
             // Add current component to currentRow, adjust values
-            std::pair<std::vector<Component *>, int> &currentRow = rows.back();
+            std::pair<std::vector<std::shared_ptr<Component>>, int> &currentRow = rows.back();
             currentRow.first.push_back(component);
 
             currentRow.second  = std::max(currentRow.second, component->getHeight());
@@ -272,18 +274,18 @@ void NLUI::FlowPane::resize() {
 
         // Set y positions
         int currentHeight = currentSize.y;
-        for(std::pair<std::vector<Component *>, int> &row : rows) {
+        for(std::pair<std::vector<std::shared_ptr<Component>>, int> &row : rows) {
             currentHeight -= row.second;
 
-            for(Component *const component : row.first) {
+            for(const std::shared_ptr<Component> &component : row.first) {
                 component->setYPos(y + currentHeight);
             }
         }
     } else if(orientation == Orientation::Vertical) {
-        std::vector<std::pair<std::vector<Component *>, int>> columns = { { { }, 0 } }; // Load with empty row
+        std::vector<std::pair<std::vector<std::shared_ptr<Component>>, int>> columns = { { { }, 0 } }; // Load with empty row
 
         int currentColumnHeight = currentSize.y;
-        for(Component *const component : components) {
+        for(const std::shared_ptr<Component> &component : components) {
             // Skip to next column if not enough height available
             if(currentColumnHeight - component->getHeight() < 0) {
                 currentColumnHeight = currentSize.x;
@@ -294,7 +296,7 @@ void NLUI::FlowPane::resize() {
             component->setYPos(y + currentColumnHeight);
 
             // Add current component to currentColumn, adjust values
-            std::pair<std::vector<Component *>, int> &currentColumn = columns.back();
+            std::pair<std::vector<std::shared_ptr<Component>>, int> &currentColumn = columns.back();
             currentColumn.first.push_back(component);
 
             currentColumn.second  = std::max(currentColumn.second, component->getWidth());
@@ -303,8 +305,8 @@ void NLUI::FlowPane::resize() {
 
         // Set x positions
         int currentWidth = 0;
-        for(std::pair<std::vector<Component *>, int> &column : columns) {
-            for(Component *const component : column.first) {
+        for(std::pair<std::vector<std::shared_ptr<Component>>, int> &column : columns) {
+            for(const std::shared_ptr<Component> &component : column.first) {
                 component->setXPos(x + currentWidth);
             }
 
@@ -361,7 +363,7 @@ void NLUI::FlowPane::resize() {
     //             // Try to give all space at once, the gradually sub-divide until the new size fits
     //             for(int i = 1; i <= row.first.size(); i++) {
     //                 int usedWidth = 0;
-    //                 for(const Component *const component : row.first) {
+    //                 for(const std::shared_ptr<const Component> &component : row.first) {
     //                     usedWidth += component->getPreferredWidth(component->getWidth() + (emptyWidth / i));
     //                 }
 
@@ -389,7 +391,7 @@ void NLUI::FlowPane::resize() {
     //             for(std::pair<std::vector<Component *>, std::pair<int, int>> &row : rows) {
     //                 int largestHeight = 0;
 
-    //                 for(const Component *const component : row.first) {
+    //                 for(const std::shared_ptr<const Component> &component : row.first) {
     //                     if(component->getPreferredHeight(component->getHeight() + (emptyHeight / i)) > largestHeight) {
     //                         largestHeight = component->getPreferredHeight(component->getHeight() + (emptyHeight / i));
     //                     }
@@ -437,7 +439,7 @@ void NLUI::FlowPane::resize() {
 
 bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
     if(Pane::mouseInside(xPos, yPos)) {
-        for(Component *const component : components) {
+        for(const std::shared_ptr<Component> &component : components) {
             if(component->mouseInside(xPos, yPos)) {
                 focus = component;
                 break; // Can only be one anyways
@@ -450,7 +452,7 @@ bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
     }
 }
 
-void NLUI::FlowPane::addComponent(Component *component) {
+void NLUI::FlowPane::addComponent(const std::shared_ptr<Component> &component) {
     component->setParent(this);
     components.push_back(component);
 
@@ -458,19 +460,50 @@ void NLUI::FlowPane::addComponent(Component *component) {
     validate();
 }
 
-void NLUI::FlowPane::removeComponent(Component *component) {
-    // Find it's position (if it has one)
-    std::vector<Component *>::iterator position = std::find(components.begin(), components.end(), component);
-    
+void NLUI::FlowPane::removeComponent(const std::shared_ptr<Component> &component) {
+    if(component == nullptr) {
+        return;
+    }
+
+    // Find its position (if it has one)
+    std::vector<std::shared_ptr<Component>>::iterator pos = std::find(components.begin(), components.end(), component);
+
     // If present remove it
-    if(position != components.end()) {
-        // Best avoid passing events if the component could potentially be deleted
-        if(focus == component) {
+    if(pos != components.end()) {
+        std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
+
+        if(focus == copy) {
             focus = nullptr;
         }
     
-        components.erase(position);
-        component->removeParent();
+        components.erase(pos);
+        copy->removeParent();
+
+        // Validate size and components
+        validate();
+    }
+}
+
+void NLUI::FlowPane::removeComponent(Component *const component) {
+    if(component == nullptr) {
+        return;
+    }
+    
+    // Find its position (if it has one)
+    std::vector<std::shared_ptr<Component>>::iterator pos = std::find_if(components.begin(), components.end(), 
+        [component](const std::shared_ptr<Component> &ptr) { return ptr.get() == component; }
+    );
+
+    // If present remove it
+    if(pos != components.end()) {
+        std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
+
+        if(focus == copy) {
+            focus = nullptr;
+        }
+    
+        components.erase(pos);
+        copy->removeParent();
 
         // Validate size and components
         validate();
@@ -491,7 +524,7 @@ void NLUI::FlowPane::validate() {
         validateParent();
     } else {
         // Fits but maybe the child components need more space
-        for(const Component *const component : components) {
+        for(const std::shared_ptr<const Component> &component : components) {
             const ivec2 compCurrentSize   = component->getSize(); 
             const ivec2 compMinimumSize   = component->getMinimumSize();
             const ivec2 compPreferredSize = component->getPreferredSize();

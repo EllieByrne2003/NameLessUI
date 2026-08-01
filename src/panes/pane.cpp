@@ -19,7 +19,7 @@
 
 
 
-NLUI::Pane::Pane() : Component() {
+NLUI::Pane::Pane(const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Component(minSize, maxSize) {
 
 }
 

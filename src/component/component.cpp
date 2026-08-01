@@ -21,7 +21,8 @@ using namespace glm;
 
 
 
-NLUI::Component::Component() {
+NLUI::Component::Component(const glm::ivec2 &minSize, const glm::ivec2 &maxSize) :
+    minimumSize(minSize), maxSize(maxSize) {
 
 }
 
@@ -30,12 +31,7 @@ NLUI::Component::~Component() {
 }
 
 void NLUI::Component::setParent(Container *parent) {
-    Container *const oldParent = this->parent;
-    this->parent = nullptr;
-
-    if(oldParent != nullptr) {
-        oldParent->removeComponent(this);
-    }
+    removeParent();
 
     this->parent = parent;
 }

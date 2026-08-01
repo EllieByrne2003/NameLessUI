@@ -1,7 +1,7 @@
 #include "gridPane.hpp"
 
 // Includes from standard
-
+#include <memory>
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
@@ -22,9 +22,9 @@ int index(const int row, const int col, const int columns) {
     return col + columns * row;
 }
 
-
-NLUI::GridPane::GridPane(const int rows, const int columns) : Pane(), rows(rows), columns(columns) {
-    components = new Component*[rows * columns];
+NLUI::GridPane::GridPane(const int rows, const int columns, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Pane(minSize, maxSize), 
+    rows(rows), columns(columns) {
+    components = new std::shared_ptr<Component>[rows * columns];
     for(int i = 0; i < rows * columns; i++) {
         components[i] = nullptr;
     }
@@ -34,11 +34,15 @@ NLUI::GridPane::~GridPane() {
     delete[] components;
 }
 
+std::shared_ptr<NLUI::GridPane> NLUI::GridPane::create(const int rows, const int columns, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) {
+    return std::shared_ptr<GridPane>(new GridPane(rows, columns, minSize, maxSize));
+}
+
 void NLUI::GridPane::draw() const {
     Pane::draw();
 
     for(int i = 0; i < rows * columns; i++) {
-        const Component *const component = components[i];
+        const std::shared_ptr<const Component> &component = components[i];
 
         if(component != nullptr) {
             component->draw();
@@ -145,7 +149,7 @@ void NLUI::GridPane::resize() {
         for(int col = 0; col < columns; col++) {
             const int colWidth = colWidths[col];
 
-            Component *const component = components[index(row, col, columns)];
+            const std::shared_ptr<Component> &component = components[index(row, col, columns)];
             if(component == nullptr) {
                 x += colWidth;
                 continue;
@@ -184,7 +188,7 @@ void NLUI::GridPane::resize() {
 bool NLUI::GridPane::mouseInside(const double xPos, const double yPos) {
     if(Pane::mouseInside(xPos, yPos)) {
         for(int i = 0; i < rows * columns; i++) {
-            Component *const component = components[i];
+            const std::shared_ptr<Component> &component = components[i];
 
             if(component != nullptr) {
                 if(component->mouseInside(xPos, yPos)) {
@@ -200,8 +204,8 @@ bool NLUI::GridPane::mouseInside(const double xPos, const double yPos) {
     }
 }
 
-void NLUI::GridPane::addComponent(Component *component, const int row, const int col) {
-    Component *const currentComponent = components[index(row, col, columns)]; // TODO add function to remove by index
+void NLUI::GridPane::addComponent(const std::shared_ptr<Component> &component, const int row, const int col) {
+    const std::shared_ptr<Component> &currentComponent = components[index(row, col, columns)]; // TODO add function to remove by index
 
     // If a component was there already, remove it
     if(currentComponent != nullptr) {
@@ -220,7 +224,7 @@ int NLUI::GridPane::getRowMinimumHeight(const int row) const {
     int rowMinHeight = 0;
 
     for(int col = 0; col < columns; col++) {
-        const Component *const component = components[index(row, col, columns)];
+        const std::shared_ptr<const Component> &component = components[index(row, col, columns)];
 
         if(component != nullptr) {
             const int compMinHeight = component->getMinimumHeight();
@@ -238,7 +242,7 @@ int NLUI::GridPane::getRowPreferredHeight(const int row) const {
     int rowPrefHeight = 0;
 
     for(int col = 0; col < columns; col++) {
-        const Component *const component = components[index(row, col, columns)];
+        const std::shared_ptr<const Component> &component = components[index(row, col, columns)];
 
         if(component != nullptr) {
             const int compPrefHeight = component->getPreferredHeight();
@@ -256,7 +260,7 @@ int NLUI::GridPane::getColMinimumWidth(const int col) const {
     int colMinWidth = 0; // TODO rename all excessively long names for mins and maxs and pref
 
     for(int row = 0; row < rows; row++) {
-        const Component *const component = components[index(row, col, columns)];
+        const std::shared_ptr<const Component> &component = components[index(row, col, columns)];
 
         if(component != nullptr) {
             const int compMinWidth = component->getMinimumWidth();
@@ -274,7 +278,7 @@ int NLUI::GridPane::getColPreferredWidth(const int col) const {
     int colPrefWidth = 0; // TODO rename all excessively long names for mins and maxs and pref
 
     for(int row = 0; row < rows; row++) {
-        const Component *const component = components[index(row, col, columns)];
+        const std::shared_ptr<const Component> &component = components[index(row, col, columns)];
 
         if(component != nullptr) {
             const int compPrefWidth = component->getPreferredWidth();
@@ -288,15 +292,48 @@ int NLUI::GridPane::getColPreferredWidth(const int col) const {
     return colPrefWidth;
 }
 
-void NLUI::GridPane::removeComponent(Component *component) {
+void NLUI::GridPane::removeComponent(const std::shared_ptr<Component> &component) {
+    if(component == nullptr) {
+        return;
+    }
+    
     for(int i = 0; i < rows * columns; i++) {
-        if(components[i] != nullptr) {
+        if(components[i] == component) {
+            const std::shared_ptr<Component> copy = components[i];
+
+            if(focus == copy) {
+                focus = nullptr;
+            }
+
             components[i] = nullptr;
             component->removeParent();
+            validate();
 
-            break; // Duplicates should be impossible anyways
+            return; // Duplicates should be impossible anyways
         }
-    } 
+    }
+}
+
+void NLUI::GridPane::removeComponent(Component *const component) {
+    if(component == nullptr) {
+        return;
+    }
+
+    for(int i = 0; i < rows * columns; i++) {
+        if(components[i].get() == component) {
+            const std::shared_ptr<Component> copy = components[i];
+
+            if(focus == copy) {
+                focus = nullptr;
+            }
+
+            components[i] = nullptr;
+            component->removeParent();
+            validate();
+
+            return; // Duplicates should be impossible anyways
+        }
+    }  
 }
 
 void NLUI::GridPane::validate() {

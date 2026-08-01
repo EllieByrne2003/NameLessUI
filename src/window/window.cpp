@@ -473,7 +473,7 @@ bool NLUI::Window::shouldClose() const {
 }
 
 // TODO should this delete the current content or not?
-void NLUI::Window::setComponent(Component *component) {
+void NLUI::Window::setComponent(const std::shared_ptr<Component> &component) {
     if(this->component != nullptr) {
         this->component->removeParent();
     }
@@ -496,10 +496,19 @@ void NLUI::Window::setComponent(Component *component) {
     component->resize();
 }
 
-void NLUI::Window::removeComponent(Component *component) {
+void NLUI::Window::removeComponent(const std::shared_ptr<Component> &component) {
     if(component != nullptr && this->component == component) {
         this->component = nullptr;
         component->removeParent();
+    }
+}
+
+void NLUI::Window::removeComponent(Component *const component) {
+    if(component != nullptr && this->component.get() == component) {
+        const std::shared_ptr<Component> copy = this->component;
+
+        this->component = nullptr;
+        copy->removeParent();
     }
 }
 

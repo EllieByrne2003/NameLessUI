@@ -1,7 +1,5 @@
 Containers should handle listeners
 
-Make the switch to shared pointers
-
 Focus should be a thing for containers?
 Redo mouseInside stuff
 

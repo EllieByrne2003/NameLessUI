@@ -1,7 +1,7 @@
 #pragma once
 
 // Includes from standard
-
+#include <memory>
 
 // Includes from third party libraries
 
@@ -21,7 +21,7 @@
 namespace NLUI {
     class GridPane : public Pane {
     private:
-        Component **components;
+        std::shared_ptr<Component> *components;
 
         // TODO update this be unsigned and to have getters
         const int rows;
@@ -30,8 +30,17 @@ namespace NLUI {
     protected:
 
     public:
-        GridPane(const int rows, const int columns);
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
+        GridPane(const int rows, const int columns, const glm::ivec2 &minSize, const glm::ivec2 &maxSize);
+
+    public:
         virtual ~GridPane() override;
+
+        static std::shared_ptr<GridPane> create(const int rows, const int columns, const glm::ivec2 &minSize = glm::ivec2(0, 0), const glm::ivec2 &maxSize = glm::ivec2(INT_MAX, INT_MAX));
 
         // Overridden from Component
         virtual void draw() const override;
@@ -75,7 +84,7 @@ namespace NLUI {
         virtual bool mouseInside(const double xPos, const double yPos) override;
 
         // New functions
-        void addComponent(Component *component, const int row, const int col); // TODO one to remove it
+        void addComponent(const std::shared_ptr<Component> &component, const int row, const int col); // TODO one to remove it
 
         // TODO start using the below everywhere
         int getRowMinimumHeight(const int row) const; // TODO implement
@@ -86,7 +95,8 @@ namespace NLUI {
 
         // Override from Container
         // handle removal
-        virtual void removeComponent(Component *component) override;
+        virtual void removeComponent(const std::shared_ptr<Component> &component) override;
+        virtual void removeComponent(Component *const component) override;
 
         // Handle children changing sizes
         virtual void validate() override;

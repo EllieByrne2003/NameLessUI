@@ -19,12 +19,17 @@ using namespace glm;
 // Type aliases
 
 
-NLUI::Spacer::Spacer() {
+NLUI::Spacer::Spacer(const glm::ivec2 &prefSize, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Component(minSize, maxSize),
+    preferredSize(prefSize) {
 
 }
 
 NLUI::Spacer::~Spacer() {
 
+}
+
+std::shared_ptr<NLUI::Spacer> NLUI::Spacer::create(const glm::ivec2 &prefSize, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) {
+    return std::shared_ptr<Spacer>(new Spacer(prefSize, minSize, maxSize));
 }
 
 void NLUI::Spacer::getPreferredSize(int &preferredWidth, int &preferredHeight) const {

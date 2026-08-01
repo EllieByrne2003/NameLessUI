@@ -50,13 +50,19 @@ namespace NLUI {
         std::vector<MouseScrollListener *> mouseScrollListeners;
 
         // Given component
-        Component *component = nullptr;
+        std::shared_ptr<Component> component = nullptr;
 
     protected:
 
     public:
-        // TODO make this private
+
+    /*----------  Functions  ----------*/
+    private:
+
+    protected:
         Window(GLFWwindow *const window, const int windowedX, const int windowedY, const int windowedWidth, const int windowedHeight);
+
+    public:
         ~Window();
 
         // TODO add one to not need json
@@ -126,11 +132,12 @@ namespace NLUI {
         bool shouldClose() const;
 
         // Setting component
-        void setComponent(Component *component);
+        void setComponent(const std::shared_ptr<Component> &component);
 
         // Override from Container
         // handle removal
-        virtual void removeComponent(Component *component) override;
+        virtual void removeComponent(const std::shared_ptr<Component> &component) override;
+        virtual void removeComponent(Component *const component) override;
 
         // Handle children changing sizes
         virtual void validate() override;
