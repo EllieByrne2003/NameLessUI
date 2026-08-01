@@ -7,8 +7,6 @@
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
-using namespace glm;
-
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -30,13 +28,13 @@ namespace NLUI {
     private:
         Container *parent = nullptr;
 
-        ivec2 minimumSize = ivec2(0, 0);
+        glm::ivec2 minimumSize = glm::ivec2(0, 0);
 
-        vec4 backgroundColour = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+        glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     protected:
-        ivec2 pos;
-        ivec2 size;
+        glm::ivec2 pos;
+        glm::ivec2 size;
 
     public:
         Component();
@@ -55,13 +53,13 @@ namespace NLUI {
 
         // Minimum size
         virtual void  getMinimumSize(int &minimumWidth, int &minimumHeight) const;
-        virtual ivec2 getMinimumSize() const;
+        virtual glm::ivec2 getMinimumSize() const;
 
         virtual int getMinimumWidth() const;
         virtual int getMinimumHeight() const;
 
         void setMinimumSize(const int minimumWidth, const int minimumHeight);
-        void setMinimumSize(const ivec2 &minimumSize);
+        void setMinimumSize(const glm::ivec2 &minimumSize);
 
         void setMinimumWidth(const int minimumWidth);
         void setMinimumHeight(const int minimumHeight);
@@ -88,34 +86,34 @@ namespace NLUI {
         // virtual int getPreferredHeight(const int availableHeight) const = 0;
 
         virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const = 0;
-        virtual ivec2 getPreferredSize() const = 0;
+        virtual glm::ivec2 getPreferredSize() const = 0;
 
         virtual int getPreferredWidth() const = 0;
         virtual int getPreferredHeight() const = 0;
 
         // Current size
         void  getSize(int &width, int &height) const;
-        ivec2 getSize() const;
+        glm::ivec2 getSize() const;
 
         int getWidth() const;
         int getHeight() const;
 
         // Current position
         void  getPos(int &xPos, int &yPos) const;
-        ivec2 getPos() const;
+        glm::ivec2 getPos() const;
 
         int getXPos() const;
         int getYPos() const;
 
         // Resizing/positioning
         void setSize(const int width, const int height);
-        void setSize(const ivec2 &size);
+        void setSize(const glm::ivec2 &size);
 
         void setWidth(const int width);
         void setHeight(const int height);
         
         void setPos(const int xPos, const int yPos);
-        void setPos(const ivec2 &pos);
+        void setPos(const glm::ivec2 &pos);
 
         void setXPos(const int xPos);
         void setYPos(const int yPos);
@@ -126,11 +124,11 @@ namespace NLUI {
         virtual bool mouseInside(const double xPos, const double yPos);
 
         // Coloured backgrounds
-        vec4 getBackgroundColour() const;
+        glm::vec4 getBackgroundColour() const;
 
         void setBackgroundColour(const float r, const float g, const float b, const float a);
         void setBackgroundColour(const float r, const float g, const float b);
 
-        void setBackgroundColour(const vec4 &backgroundColour);
+        void setBackgroundColour(const glm::vec4 &backgroundColour);
     };
 };

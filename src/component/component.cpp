@@ -4,7 +4,8 @@
 
 
 // Includes from third party libraries
-
+#include <glm/glm.hpp>
+using namespace glm;
 
 // Includes from personal libraries
 

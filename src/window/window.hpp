@@ -6,8 +6,6 @@
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
-using namespace glm;
-
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -76,8 +74,8 @@ namespace NLUI {
         // void swapBuffers();
 
         void clear();
-        void clear(const vec3 &colour);
-        void clear(const vec4 &colour);
+        void clear(const glm::vec3 &colour);
+        void clear(const glm::vec4 &colour);
 
         // Input handling
         void keyPressed(const int key);
@@ -113,13 +111,13 @@ namespace NLUI {
 
         void  resize(const int width, const int height);
         void  getSize(int &width, int &height) const;
-        ivec2 getSize() const;
+        glm::ivec2 getSize() const;
 
         int getWidth() const;
         int getHeight() const;
 
         void  getFrameBufferSize(int &width, int &height) const;
-        ivec2 getFrameBufferSize() const;
+        glm::ivec2 getFrameBufferSize() const;
 
         int getFrameBufferWidth() const;
         int getFrameBufferHeight() const;

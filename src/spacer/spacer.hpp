@@ -21,7 +21,7 @@
 namespace NLUI {
     class Spacer final : public Component {
     private:
-        glm::ivec2 preferredSize = ivec2(0, 0);
+        glm::ivec2 preferredSize = glm::ivec2(0, 0);
 
     protected:
 
@@ -32,7 +32,7 @@ namespace NLUI {
         // Override from Component
         // Preferred size
         virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const override;
-        virtual ivec2 getPreferredSize() const override;
+        virtual glm::ivec2 getPreferredSize() const override;
 
         virtual int getPreferredWidth() const override;
         virtual int getPreferredHeight() const override;
@@ -43,7 +43,7 @@ namespace NLUI {
         // New functions
         // Preferred size
         void setPreferredSize(const int preferredWidth, const int preferredHeight);
-        void setPreferredSize(const ivec2 &preferredSize);
+        void setPreferredSize(const glm::ivec2 &preferredSize);
 
         void setPreferredWidth(const int preferredWidth);
         void setPreferredHeight(const int preferredHeight);

@@ -4,6 +4,9 @@
 #include <mutex>
 
 // Includes from third party libraries
+#include <glm/glm.hpp>
+using namespace glm;
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 

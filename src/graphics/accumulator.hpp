@@ -5,7 +5,6 @@
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
-using namespace glm;
 
 // Includes from personal libraries
 
@@ -36,10 +35,10 @@ namespace NLUI {
             ~Accumulator();
 
             // Solid colour primitives
-            void addSolidQuad(const vec4 &colour, const vec2 &v1, const vec2 &v2, const vec2 &v3, const vec2 &v4);
-            void addSolidQuad(const vec4 &colour, const vec2 &pos, const vec2 &size);
+            void addSolidQuad(const glm::vec4 &colour, const glm::vec2 &v1, const glm::vec2 &v2, const glm::vec2 &v3, const glm::vec2 &v4);
+            void addSolidQuad(const glm::vec4 &colour, const glm::vec2 &pos, const glm::vec2 &size);
 
-            void addSolidTri(const vec4 &colour, const vec2 &v1, const vec2 &v2, const vec2 &v3);
+            void addSolidTri(const glm::vec4 &colour, const glm::vec2 &v1, const glm::vec2 &v2, const glm::vec2 &v3);
 
             // Image primitives
             // TODO implement these

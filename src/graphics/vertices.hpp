@@ -5,7 +5,6 @@
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
-using namespace glm;
 
 // Includes from personal libraries
 
@@ -22,13 +21,13 @@ using namespace glm;
 namespace NLUI {
     namespace Graphics {
         struct SolidVertex {
-            vec2 pos;
-            vec4 colour;
+            glm::vec2 pos;
+            glm::vec4 colour;
         };
 
         struct ImageVertex {
-            vec2 pos;
-            vec2 uv;
+            glm::vec2 pos;
+            glm::vec2 uv;
         };
 
         // TODO add one for text
