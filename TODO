@@ -11,7 +11,8 @@ All components should have events passed, can override as they like    (Should b
 
 Implement textboxes
 
-Allow panels background images. Render image atop colour
+Create an image component
+
 Allow panels to have minimum sizes (returned if minimum size of children smaller)
 
 Create basic shaders to render solid coloured boxes and textured boxes (Should include clip space)
