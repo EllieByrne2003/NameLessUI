@@ -41,15 +41,6 @@ void NLUI::FlowPane::draw() const {
     }
 }
 
-void NLUI::FlowPane::getMinimumSize(int &minimumWidth, int &minimumHeight) const {
-    minimumWidth  = getMinimumWidth();
-    minimumHeight = getMinimumHeight();
-}
-
-ivec2 NLUI::FlowPane::getMinimumSize() const {
-    return ivec2(getMinimumWidth(), getMinimumHeight());
-}
-
 int NLUI::FlowPane::getMinimumWidth() const {
     int minimumWidth = 0;
 
@@ -170,18 +161,6 @@ int NLUI::FlowPane::getMinimumHeight() const {
 // int NLUI::FlowPane::getPreferredHeight(const int availableHeight) const {
 //     return availableHeight; // TODO have a flag to decide whether to fill all space or just add up components answers
 // }
-
-void NLUI::FlowPane::getPreferredSize(int &preferredWidth, int &preferredHeight) const {
-    preferredWidth  = getPreferredWidth();
-    preferredHeight = getPreferredHeight();
-}
-
-ivec2 NLUI::FlowPane::getPreferredSize() const {
-    const int preferredWidth  = getPreferredWidth();
-    const int preferredHeight = getPreferredHeight();
-
-    return ivec2(preferredWidth, preferredHeight);
-}
 
 int NLUI::FlowPane::getPreferredWidth() const {
     int preferredWidth = 0;

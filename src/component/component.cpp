@@ -74,15 +74,16 @@ int NLUI::Component::getMinimumHeight() const {
 }
 
 void NLUI::Component::setMinimumSize(const int minimumWidth, const int minimumHeight) {
-    minimumSize.x = minimumWidth;
-    minimumSize.y = minimumHeight;
+    setMinimumWidth(minimumWidth);
+    setMinimumHeight(minimumHeight);
 
     // Validate parent can fit with new minimums
     validateParent();
 }
 
 void NLUI::Component::setMinimumSize(const ivec2 &minimumSize) {
-    this->minimumSize = minimumSize;
+    setMinimumWidth(minimumSize.x);
+    setMinimumHeight(minimumSize.y);
 
     // Validate parent can fit with new minimums
     validateParent();
@@ -100,6 +101,18 @@ void NLUI::Component::setMinimumHeight(const int minimumHeight) {
 
     // Validate parent can fit with new minimums
     validateParent();
+}
+
+void NLUI::Component::getPreferredSize(int &preferredWidth, int &preferredHeight) const {
+    preferredWidth  = getPreferredWidth();
+    preferredHeight = getPreferredHeight();
+}
+
+glm::ivec2 NLUI::Component::getPreferredSize() const {
+    const int preferredWidth  = getPreferredWidth();
+    const int preferredHeight = getPreferredHeight();
+
+    return ivec2(preferredWidth, preferredHeight);
 }
 
 void NLUI::Component::getSize(int &width, int &height) const {

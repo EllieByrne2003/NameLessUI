@@ -58,8 +58,8 @@ namespace NLUI {
         virtual void draw() const;
 
         // Minimum size
-        virtual void  getMinimumSize(int &minimumWidth, int &minimumHeight) const;
-        virtual glm::ivec2 getMinimumSize() const;
+        void getMinimumSize(int &minimumWidth, int &minimumHeight) const;
+        glm::ivec2 getMinimumSize() const;
 
         virtual int getMinimumWidth() const;
         virtual int getMinimumHeight() const;
@@ -91,8 +91,8 @@ namespace NLUI {
         // virtual int getPreferredWidth(const int availableWidth) const = 0;
         // virtual int getPreferredHeight(const int availableHeight) const = 0;
 
-        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const = 0;
-        virtual glm::ivec2 getPreferredSize() const = 0;
+        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const;
+        virtual glm::ivec2 getPreferredSize() const;
 
         virtual int getPreferredWidth() const = 0;
         virtual int getPreferredHeight() const = 0;

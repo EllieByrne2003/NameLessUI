@@ -50,15 +50,6 @@ void NLUI::GridPane::draw() const {
     }
 }
 
-void NLUI::GridPane::getMinimumSize(int &minimumWidth, int &minimumHeight) const {
-    minimumWidth  = getMinimumWidth();
-    minimumHeight = getMinimumHeight();
-}
-
-ivec2 NLUI::GridPane::getMinimumSize() const {
-    return ivec2(getMinimumWidth(), getMinimumHeight());
-}
-
 int NLUI::GridPane::getMinimumWidth() const {
     int minWidth = 0;
 
@@ -79,15 +70,6 @@ int NLUI::GridPane::getMinimumHeight() const {
     }
 
     return minHeight;
-}
-
-void NLUI::GridPane::getPreferredSize(int &preferredWidth, int &preferredHeight) const {
-    preferredWidth  = getPreferredWidth();
-    preferredHeight = getPreferredHeight();
-}
-
-ivec2 NLUI::GridPane::getPreferredSize() const {
-    return ivec2(getPreferredWidth(), getPreferredHeight());
 }
 
 int NLUI::GridPane::getPreferredWidth() const {

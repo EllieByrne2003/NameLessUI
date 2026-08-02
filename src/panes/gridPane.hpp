@@ -46,9 +46,6 @@ namespace NLUI {
         virtual void draw() const override;
 
         // Minimum size
-        virtual void  getMinimumSize(int &minimumWidth, int &minimumHeight) const override;
-        virtual glm::ivec2 getMinimumSize() const override;
-
         virtual int getMinimumWidth() const override;
         virtual int getMinimumHeight() const override;
 
@@ -71,9 +68,6 @@ namespace NLUI {
 
         // virtual int getPreferredWidth(const int availableWidth) const override;
         // virtual int getPreferredHeight(const int availableHeight) const override;
-
-        virtual void getPreferredSize(int &minimumWidth, int &minimumHeight) const override;
-        virtual glm::ivec2 getPreferredSize() const override;
 
         virtual int getPreferredWidth() const override;
         virtual int getPreferredHeight() const override;
