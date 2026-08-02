@@ -1,10 +1,14 @@
 // Includes from standard
 #include <iostream>
+#include <memory>
 
 // Includes from third party libraries
 #include <GLFW/glfw3.h>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+#include <glm/glm.hpp>
+using namespace glm;
 
 // Includes from personal libraries
 #include <NLUT/logger/logger.hpp>
@@ -34,30 +38,22 @@ int main() {
         return -1;
     }
 
-    FlowPane *mainPane = new FlowPane();
+    std::shared_ptr<FlowPane> mainPane = FlowPane::create();
     mainPane->setBackgroundColour(0.5, 0.5, 0.5);
 
-    Spacer *spacer1 = new Spacer();
-    spacer1->setMinimumSize(150, 50);
-    spacer1->setPreferredSize(150, 50);
+    std::shared_ptr<Spacer> spacer1 = Spacer::create(ivec2(150, 50), ivec2(100, 50));
     spacer1->setBackgroundColour(0.25, 0.0, 0.0);
     mainPane->addComponent(spacer1);
 
-    Spacer *spacer2 = new Spacer();
-    spacer2->setMinimumSize(50, 70);
-    spacer2->setPreferredSize(50, 80);
+    std::shared_ptr<Spacer> spacer2 = Spacer::create(ivec2(50, 80), ivec2(50, 70));
     spacer2->setBackgroundColour(0.0, 0.25, 0.0);
     mainPane->addComponent(spacer2);
 
-    Spacer *spacer3 = new Spacer();
-    spacer3->setMinimumSize(75, 50);
-    spacer3->setPreferredSize(75, 50);
+    std::shared_ptr<Spacer> spacer3 = Spacer::create(ivec2(75, 50), ivec2(75, 50));
     spacer3->setBackgroundColour(0.0, 0.0, 0.25);
     mainPane->addComponent(spacer3);
 
-    Spacer *spacer4 = new Spacer();
-    spacer4->setMinimumSize(50, 50);
-    spacer4->setPreferredSize(50, 50);
+    std::shared_ptr<Spacer> spacer4 = Spacer::create(ivec2(50, 50), ivec2(50, 50));
     spacer4->setBackgroundColour(0.25, 0.25, 0.0);
     mainPane->addComponent(spacer4);
 
