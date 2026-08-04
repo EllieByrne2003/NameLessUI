@@ -61,7 +61,7 @@ static bool initialised = false;
 
 bool NLUI::Graphics::initialiseSolidShader(NLUT::Logger &logger) {
     static std::mutex initMutex;
-    std::unique_lock intiLock(initMutex);
+    std::unique_lock initLock(initMutex);
 
     if(initialised) {
         return true;
