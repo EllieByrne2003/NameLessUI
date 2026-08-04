@@ -221,6 +221,7 @@ void NLUI::Window::startDrawing() {
     // Pass uniforms for all
     mat4 mvp = glm::ortho(0.0f, (float) frameBufferSize.x, 0.0f, (float) frameBufferSize.y, -1.0f, 1.0f);
     Graphics::passSolidMVP(mvp);
+    Graphics::passTextureMVP(mvp);
 }
 
 void NLUI::Window::finishDrawing() {
