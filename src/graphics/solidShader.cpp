@@ -76,6 +76,7 @@ bool NLUI::Graphics::initialiseSolidShader(NLUT::Logger &logger) {
             return false;
         }
 
+        // TODO add check to verify success
         mvpLoc = NLUT::getLoc(programID, "mvp");
 
         glGenVertexArrays(1, &VAO);
