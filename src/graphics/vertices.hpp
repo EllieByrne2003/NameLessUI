@@ -25,7 +25,7 @@ namespace NLUI {
             glm::vec4 colour;
         };
 
-        struct ImageVertex {
+        struct ImageVertex { // TODO maybe should be called TextureVertex? IDK
             glm::vec2 pos;
             glm::vec2 uv;
         };

@@ -26,11 +26,20 @@ bool NLUI::Graphics::initialiseShaders(NLUT::Logger &logger) {
         return false;
     }
 
+    if(!initialiseTextureShader(logger)) {
+        logger.addError("Failed to initialise texture shader or location.");
+        return false;
+    }
+
     return true;
 }
 
 bool NLUI::Graphics::shadersInitialised() {
     if(!solidShaderInitialised()) {
+        return false;
+    }
+
+    if(!textureShaderInitialised()) {
         return false;
     }
 
