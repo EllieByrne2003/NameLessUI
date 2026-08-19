@@ -58,31 +58,24 @@ void NLUI::Image::draw() const {
     Graphics::drawTextureQuad(imageID, pos, size);
 }
 
-// void NLUI::Image::getMinimumSize(int &minimumWidth, int &minimumHeight) const {
+void NLUI::Image::getPrefSize(int &prefWidth, int &prefHeight) const {
+    prefWidth  = imageSize.x;
+    prefHeight = imageSize.y; 
+}
 
-// }
+glm::ivec2 NLUI::Image::getPrefSize() const {
+    return imageSize;
+}
 
-// glm::ivec2 NLUI::Image::getMinimumSize() const {
-
-// }
-
-// int NLUI::Image::getMinimumWidth() const {
-
-// }
-
-// int NLUI::Image::getMinimumHeight() const {
-
-// }
-
-int NLUI::Image::getPreferredWidth() const {
+int NLUI::Image::getPrefWidth() const {
     return imageSize.x;
 }
 
-int NLUI::Image::getPreferredHeight() const {
+int NLUI::Image::getPrefHeight() const {
     return imageSize.y;
 }
 
-// Resizing/positioning
-void NLUI::Image::resize() {
-    // Nothing to do here
+// TODO maybe give an empty one in component.cpp and remove this?
+void NLUI::Image::onResize() {
+
 }
