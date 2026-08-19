@@ -594,15 +594,6 @@ void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
         }
     }
 
-    // Equalise size of components in rows and columns
-    for(int row = 0; row < rows; row++) {
-        growRowToHeight(row, getRowHeight(row));
-    }
-
-    for(int col = 0; col < cols; col++) {
-        growColToWidth(col, getColWidth(col));
-    }
-
     // Get row heights // TODO should be unsigned
     int totalHeight    = 0;
     int totalMinHeight = 0;
@@ -851,27 +842,44 @@ void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
         }
     }
 
-    // Set positions
-    int y = pos.y;
+    // Equalise size of components in rows and columns
     for(int row = 0; row < rows; row++) {
+        growRowToHeight(row, getRowHeight(row));
+    }
+
+    for(int col = 0; col < cols; col++) {
+        growColToWidth(col, getColWidth(col));
+    }
+
+    // Set positions
+    int y = pos.y + ((size.y - totalHeight) / 2);
+    for(int row = 0; row < rows; row++) {
+        const int rowHeight = getRowHeight(row);
+
         for(int col = 0; col < cols; col++) {
             std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
             if(comp != nullptr) {
-                comp->setYPos(y);
+                const int offset = (rowHeight - comp->getHeight()) / 2;
+
+                comp->setYPos(y + offset);
             }
         }
 
         y += getRowHeight(row);
     }
 
-    int x = pos.x;
+    int x = pos.x + ((size.x - totalWidth) / 2);
     for(int col = 0; col < cols; col++) {
+        const int colWidth = getColWidth(col);
+
         for(int row = 0; row < rows; row++) {
             std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
             if(comp != nullptr) {
-                comp->setXPos(x);
+                const int offset = (colWidth - comp->getWidth()) / 2;
+
+                comp->setXPos(x + offset);
             }
         }
 
