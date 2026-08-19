@@ -594,6 +594,15 @@ void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
         }
     }
 
+    // Equalise size of components in rows and columns
+    for(int row = 0; row < rows; row++) {
+        growRowToHeight(row, getRowHeight(row));
+    }
+
+    for(int col = 0; col < cols; col++) {
+        growColToWidth(col, getColWidth(col));
+    }
+
     // Get row heights // TODO should be unsigned
     int totalHeight    = 0;
     int totalMinHeight = 0;
