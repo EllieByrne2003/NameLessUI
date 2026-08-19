@@ -24,3 +24,7 @@ NLUI::Pane::Pane(const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Compone
 }
 
 NLUI::Pane::~Pane() = default;
+
+void NLUI::Pane::onResize() {
+    doLayout();
+}
