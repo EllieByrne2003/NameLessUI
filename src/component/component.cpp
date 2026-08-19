@@ -82,7 +82,7 @@ void NLUI::Component::setHeight(const int height) {
 }
 
 void NLUI::Component::proposeSize(const int propWidth, const int propHeight) {
-    const glm::ivec2 propSize = ivec2(propWidth, propHeight);
+    const glm::ivec2 propSize = glm::ivec2(propWidth, propHeight);
 
     const glm::ivec2 prefSize = getPrefSize();
     const glm::ivec2 minSize  = getMinSize();
@@ -148,8 +148,33 @@ void NLUI::Component::shrinkHeight(const int decHeight) {
     onResize();
 }
 
+void NLUI::Component::shrinkToSize(const int propWidth, const int propHeight) {
+    size.x = propWidth;
+    size.y = propHeight;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToSize(const glm::ivec2 &propSize) {
+    size = propSize;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToWidth(const int propWidth) {
+    size.x = propWidth;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToHeight(const int propHeight) {
+    size.y = propHeight;
+
+    onResize();
+}
+
 void NLUI::Component::growSize(const int incWidth, const int incHeight) {
-    const glm::ivec2 propSize = size + ivec2(incWidth, incHeight);
+    const glm::ivec2 propSize = size + glm::ivec2(incWidth, incHeight);
     const glm::ivec2 maxSize  = getMaxSize();
 
     size = glm::min(propSize, maxSize);
@@ -178,6 +203,39 @@ void NLUI::Component::growWidth(const int incWidth) {
 void NLUI::Component::growHeight(const int incHeight) {
     const int propHeight = size.y + incHeight;
     const int maxHeight  = getMaxHeight();
+
+    size.y = std::min(propHeight, maxHeight);
+
+    onResize();
+}
+
+void NLUI::Component::growToSize(const int propWidth, const int propHeight) {
+    const glm::ivec2 propSize = glm::ivec2(propWidth, propHeight);
+    const glm::ivec2 maxSize  = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growToSize(const glm::ivec2 &propSize) {
+    const glm::ivec2 maxSize = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growToWidth(const int propWidth) {
+    const int maxWidth = getMaxWidth();
+
+    size.x = std::min(propWidth, maxWidth);
+
+    onResize();
+}
+
+void NLUI::Component::growToHeight(const int propHeight) {
+    const int maxHeight = getMaxHeight();
 
     size.y = std::min(propHeight, maxHeight);
 

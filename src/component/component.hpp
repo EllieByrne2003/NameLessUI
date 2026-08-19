@@ -54,7 +54,7 @@ namespace NLUI {
 
         // Function to draw self
         virtual void draw() const;
-        
+
         // Functions to set sizes
         void setSize(const int width, const int height);
         void setSize(const glm::ivec2 &size);
@@ -67,15 +67,26 @@ namespace NLUI {
         virtual void proposeWidth(const int propWidth);
         virtual void proposeHeight(const int propHeight);
 
+        // TODO consider checks for growing and shrinking to make sure sizes increasing/decreasing as expected
         void shrinkSize(const int decWidth, const int decHeight);
         void shrinkSize(const glm::ivec2 &decSize);
         void shrinkWidth(const int decWidth);
         void shrinkHeight(const int decHeight);
 
+        void shrinkToSize(const int propWidth, const int propHeight);
+        void shrinkToSize(const glm::ivec2 &propSize);
+        void shrinkToWidth(const int propWidth);
+        void shrinkToHeight(const int propHeight);
+
         void growSize(const int incWidth, const int incHeight);
         void growSize(const glm::ivec2 &incSize);
         void growWidth(const int incWidth);
         void growHeight(const int incHeight);
+
+        void growToSize(const int propWidth, const int propHeight);
+        void growToSize(const glm::ivec2 &propSize);
+        void growToWidth(const int propWidth);
+        void growToHeight(const int propHeight);
 
         // Functions to set positions
         void setPos(const int xPos, const int yPos);
