@@ -45,12 +45,6 @@ namespace NLUI {
     protected:
         Component(const glm::ivec2 &minSize, const glm::ivec2 &maxSize);
 
-        // Functions to set sizes
-        void setSize(const int width, const int height);
-        void setSize(const glm::ivec2 &size);
-        void setWidth(const int width);
-        void setHeight(const int height);
-
     public:
         virtual ~Component() = 0;
 
@@ -60,6 +54,12 @@ namespace NLUI {
 
         // Function to draw self
         virtual void draw() const;
+        
+        // Functions to set sizes
+        void setSize(const int width, const int height);
+        void setSize(const glm::ivec2 &size);
+        void setWidth(const int width);
+        void setHeight(const int height);
 
         // Functions to perform layout tasks
         virtual void proposeSize(const int propWidth, const int propHeight);
@@ -111,7 +111,7 @@ namespace NLUI {
         virtual int getMinHeight() const;
 
         virtual void getMaxSize(int &maxWidth, int &maxHeight) const;
-        virtual glm::ivec2 getmaxSize() const;
+        virtual glm::ivec2 getMaxSize() const;
         virtual int getMaxWidth() const;
         virtual int getMaxHeight() const;
 
