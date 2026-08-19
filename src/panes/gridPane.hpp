@@ -36,8 +36,14 @@ namespace NLUI {
         void shrinkRowHeight(const int row, const int decHeight);
         void growRowHeight(const int row, const int incHeight);
 
+        void shrinkRowToHeight(const int row, const int propHeight);
+        void growRowToHeight(const int row, const int propHeight);
+
         void shrinkColWidth(const int col, const int decWidth);
         void growColWidth(const int col, const int incWidth);
+
+        void shrinkColToWidth(const int col, const int propWidth);
+        void growColToWidth(const int col, const int propWidth);
 
         int getRowHeight(const int row) const;
         int getRowPrefHeight(const int row) const;

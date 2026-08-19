@@ -39,69 +39,93 @@ std::shared_ptr<NLUI::GridPane> NLUI::GridPane::create(const int rows, const int
 }
 
 void NLUI::GridPane::shrinkRowHeight(const int row, const int decHeight) {
-    const int rowHeight = getRowHeight(row);
+    const int rowHeight  = getRowHeight(row);
+    const int propHeight = rowHeight - decHeight; 
 
     for(int col = 0; col < cols; col++) {
         std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
         if(comp != nullptr) {
-            const int compHeight = comp->getHeight();
-            const int decrease = decHeight - (rowHeight - compHeight);
-
-            if(decrease > 0) {
-                comp->shrinkHeight(decrease);
-            }
+            comp->shrinkToHeight(propHeight);
         }
     }
 }
 
 void NLUI::GridPane::growRowHeight(const int row, const int incHeight) {
-    const int rowHeight = getRowHeight(row);
+    const int rowHeight  = getRowHeight(row);
+    const int propHeight = rowHeight + incHeight;
 
     for(int col = 0; col < cols; col++) {
         std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
         if(comp != nullptr) {
-            const int compHeight = comp->getHeight();
-            const int increase = incHeight + (rowHeight - compHeight); // TODO, need a function to max all componenets to rowHeight or their max // TODO do similar fix on growColWidth
+            comp->growToHeight(propHeight);
+        }
+    }
+}
 
-            if(increase > 0) {
-                comp->growHeight(increase);
-            }
+void NLUI::GridPane::shrinkRowToHeight(const int row, const int propHeight) {
+    for(int col = 0; col < cols; col++) {
+        std::shared_ptr<Component> &comp = components[index(row, col, cols)];
+
+        if(comp != nullptr) {
+            comp->shrinkToHeight(propHeight);
+        }
+    }
+}
+
+void NLUI::GridPane::growRowToHeight(const int row, const int propHeight) {
+    for(int col = 0; col < cols; col++) {
+        std::shared_ptr<Component> &comp = components[index(row, col, cols)];
+
+        if(comp != nullptr) {
+            comp->growToHeight(propHeight);
         }
     }
 }
 
 void NLUI::GridPane::shrinkColWidth(const int col, const int decWidth) {
-    const int colWidth = getColWidth(col);
+    const int colWidth  = getColWidth(col);
+    const int propWidth = colWidth - decWidth;
 
     for(int row = 0; row < rows; row++) {
         std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
         if(comp != nullptr) {
-            const int compWidth = comp->getWidth();
-            const int decrease = decWidth - (colWidth - compWidth);
-
-            if(decrease > 0) {
-                comp->shrinkWidth(decrease);
-            }
+            comp->shrinkToWidth(propWidth);
         }
     }
 }
 
 void NLUI::GridPane::growColWidth(const int col, const int incWidth) {
-    const int colWidth = getColWidth(col);
+    const int colWidth  = getColWidth(col);
+    const int propWidth = colWidth + incWidth;
 
     for(int row = 0; row < rows; row++) {
         std::shared_ptr<Component> &comp = components[index(row, col, cols)];
 
         if(comp != nullptr) {
-            const int compWidth = comp->getWidth();
-            const int increase = incWidth - (colWidth - compWidth);
+            comp->growToWidth(propWidth);
+        }
+    }
+}
 
-            if(increase > 0) {
-                comp->growWidth(increase);
-            }
+void NLUI::GridPane::shrinkColToWidth(const int col, const int propWidth) {
+    for(int row = 0; row < rows; row++) {
+        std::shared_ptr<Component> &comp = components[index(row, col, cols)];
+
+        if(comp != nullptr) {
+            comp->shrinkToWidth(propWidth);
+        }
+    }
+}
+
+void NLUI::GridPane::growColToWidth(const int col, const int propWidth) {
+    for(int row = 0; row < rows; row++) {
+        std::shared_ptr<Component> &comp = components[index(row, col, cols)];
+
+        if(comp != nullptr) {
+            comp->growToWidth(propWidth);
         }
     }
 }
