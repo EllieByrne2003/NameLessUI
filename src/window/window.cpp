@@ -3,7 +3,6 @@
 // Includes from standard
 #include <fstream>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <iostream> // TODO debugging only
 #include <mutex>
 
 // Includes from third party libraries
