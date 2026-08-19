@@ -29,7 +29,7 @@ int main() {
 
     Logger logger("example.log");
 
-    Window *window = Window::createWindow(logger, "Basic gridPane example", false, 50, 50);
+    Window *window = Window::createWindow(logger, "Basic gridPane example", false, 500, 370);
     if(window == nullptr) {
         logger.addError("Failed to create window.");
         return -1;
@@ -38,19 +38,19 @@ int main() {
     std::shared_ptr<GridPane> mainPane = GridPane::create(2, 3);
     mainPane->setBackgroundColour(0.5, 0.5, 0.5);
 
-    std::shared_ptr<Spacer> spacer1 = Spacer::create(ivec2(150, 150), ivec2(150, 150));
+    std::shared_ptr<Spacer> spacer1 = Spacer::create(ivec2(100, 100), ivec2(50, 50), ivec2(150, 150));
     spacer1->setBackgroundColour(0.25, 0.0, 0.0);
     mainPane->addComponent(spacer1, 1, 0);
 
-    std::shared_ptr<Spacer> spacer2 = Spacer::create(ivec2(50, 80), ivec2(50, 70));
+    std::shared_ptr<Spacer> spacer2 = Spacer::create(ivec2(50, 80), ivec2(50, 70), ivec2(150, 150));
     spacer2->setBackgroundColour(0.0, 0.25, 0.0);
     mainPane->addComponent(spacer2, 1, 1);
 
-    std::shared_ptr<Spacer> spacer3 = Spacer::create(ivec2(75, 50), ivec2(74, 50));
+    std::shared_ptr<Spacer> spacer3 = Spacer::create(ivec2(75, 50), ivec2(75, 50), ivec2(150, 150));
     spacer3->setBackgroundColour(0.0, 0.0, 0.25);
     mainPane->addComponent(spacer3, 0, 1);
 
-    std::shared_ptr<Spacer> spacer4 = Spacer::create(ivec2(100, 50), ivec2(100, 50));
+    std::shared_ptr<Spacer> spacer4 = Spacer::create(ivec2(100, 50), ivec2(50, 50), ivec2(150, 150));
     spacer4->setBackgroundColour(0.25, 0.25, 0.0);
     mainPane->addComponent(spacer4, 0, 2);
 
