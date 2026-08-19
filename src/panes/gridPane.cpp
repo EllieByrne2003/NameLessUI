@@ -417,21 +417,21 @@ glm::ivec2 NLUI::GridPane::getMinSize() const {
 }
 
 int NLUI::GridPane::getMinWidth() const {
-    int minWidth = 0;
+    int sumMinWidth = 0;
     for(int col = 0; col < cols; col++) {
-        minWidth += getColMinWidth(col);
+        sumMinWidth += getColMinWidth(col);
     }
 
-    return minWidth;
+    return std::max(minSize.x, sumMinWidth);
 }
 
 int NLUI::GridPane::getMinHeight() const {
-    int minHeight = 0;
+    int sumMinHeight = 0;
     for(int row = 0; row < rows; row++) {
-        minHeight += getRowMinHeight(row);
+        sumMinHeight += getRowMinHeight(row);
     }
 
-    return minHeight;
+    return std::max(minSize.y, sumMinHeight);
 }
 
 void NLUI::GridPane::getMaxSize(int &maxWidth, int &maxHeight) const {
@@ -504,21 +504,21 @@ glm::ivec2 NLUI::GridPane::getMaxSize() const {
 }
 
 int NLUI::GridPane::getMaxWidth() const {
-    int maxWidth = 0;
+    int sumMaxWidth = 0;
     for(int col = 0; col < cols; col++) {
-        maxWidth += getColMaxWidth(col);
+        sumMaxWidth += getColMaxWidth(col);
     }
 
-    return maxWidth;
+    return std::min(maxSize.x, sumMaxWidth);
 }
 
 int NLUI::GridPane::getMaxHeight() const {
-    int maxHeight = 0;
+    int sumMaxHeight = 0;
     for(int row = 0; row < rows; row++) {
-        maxHeight += getRowMaxHeight(row);
+        sumMaxHeight += getRowMaxHeight(row);
     }
 
-    return maxHeight;
+    return std::min(maxSize.y, sumMaxHeight);
 }
     
 bool NLUI::GridPane::mouseInside(const double xPos, const double yPos) {
