@@ -37,6 +37,9 @@ namespace NLUI {
     public:
         virtual ~Pane() = 0;
 
+        // Overridden from Component and Container
+        virtual void layoutRoot() override final;
+
         // Overridden from Component
         virtual void onResize() override;
 

@@ -555,7 +555,7 @@ void NLUI::GridPane::removeComponent(const std::shared_ptr<Component> &component
 
             components[i] = nullptr;
             component->removeParent();
-            Pane::doLayout();
+            layoutRoot();
 
             return; // Duplicates should be impossible anyways
         }
@@ -577,7 +577,7 @@ void NLUI::GridPane::removeComponent(Component *const component) {
 
             components[i] = nullptr;
             component->removeParent();
-            Pane::doLayout();
+            layoutRoot();
 
             return; // Duplicates should be impossible anyways
         }
@@ -890,6 +890,5 @@ void NLUI::GridPane::addComponent(const std::shared_ptr<Component> &component, c
     component->setParent(this);
     components[index(row, col, cols)] = component;
 
-    // Validate size and components
-    Pane::doLayout();
+    layoutRoot();
 }

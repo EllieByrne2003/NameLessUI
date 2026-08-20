@@ -43,6 +43,7 @@ namespace NLUI {
 
 
         // Layout components and get sizes
+        virtual void layoutRoot() = 0;
         virtual void doLayout() = 0;
         // virtual glm::ivec2 simulateLayout() const = 0; // TODO this is to get the size // TODO maybe make ones to return answer in different format
     };

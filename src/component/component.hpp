@@ -25,11 +25,11 @@ namespace NLUI {
     class Component {
         friend class Container; // Can need to access private variables // TODO don't like this, but changes to window needed
     private:
-        Container *parent = nullptr;
-
         glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     protected:
+        Container *parent = nullptr;
+        
         glm::ivec2 pos;
 
         // TODO make these private
@@ -50,7 +50,7 @@ namespace NLUI {
 
         void setParent(Container *parent);
         void removeParent();
-        void validateParent();
+        virtual void layoutRoot();
 
         // Function to draw self
         virtual void draw() const;

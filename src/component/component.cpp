@@ -45,9 +45,9 @@ void NLUI::Component::removeParent() {
     }
 }
 
-void NLUI::Component::validateParent() {
+void NLUI::Component::layoutRoot() {
     if(parent != nullptr) {
-        parent->doLayout();
+        parent->layoutRoot();
     }
 }
 
