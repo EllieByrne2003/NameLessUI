@@ -42,7 +42,7 @@ int main() {
     spacer1->setBackgroundColour(0.25, 0.0, 0.0);
     mainPane->addComponent(spacer1, 1, 0);
 
-    std::shared_ptr<Spacer> spacer2 = Spacer::create(ivec2(50, 80), ivec2(50, 70), ivec2(150, 150));
+    std::shared_ptr<Spacer> spacer2 = Spacer::create(ivec2(50, 80), ivec2(50, 70), ivec2(125, 125));
     spacer2->setBackgroundColour(0.0, 0.25, 0.0);
     mainPane->addComponent(spacer2, 1, 1);
 
