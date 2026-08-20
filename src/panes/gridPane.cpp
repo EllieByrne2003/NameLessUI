@@ -642,7 +642,7 @@ void NLUI::GridPane::doLayout() {
             totalGrowthHeight--;
         }
     } else if(totalHeight > size.y) {
-            if(totalHeight - totalExtraHeight <= size.y) {
+        if(totalHeight - totalExtraHeight <= size.y) {
             // Remove proporitionally
             const int reduction = totalHeight - size.y;
             for(int row = 0; row < rows; row++) {
@@ -858,7 +858,7 @@ void NLUI::GridPane::doLayout() {
             }
         }
 
-        y += getRowHeight(row);
+        y += rowHeight;
     }
 
     int x = pos.x + ((size.x - totalWidth) / 2);
@@ -875,7 +875,7 @@ void NLUI::GridPane::doLayout() {
             }
         }
 
-        x += getColWidth(col);
+        x += colWidth;
     }
 }
 
