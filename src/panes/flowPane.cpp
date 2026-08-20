@@ -19,6 +19,10 @@ using namespace glm;
 void shrinkRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, const int decHeight);
 void growRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, const int incHeight);
 
+int getRowWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
+int getRowMaxWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
+int getRowGrowthWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
+
 int getRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowMinHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowMaxHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
@@ -696,14 +700,22 @@ void NLUI::FlowPane::doLayout() {
             }
         }
 
-        // TODO have something to increase widths to fill space too 
+        // TODO increase component width to fill full space
         // TODO maybe offser a flag for that? Pack?
+        // TODO this is soooooo messy, make it a private function?
+        for(const std::vector<std::shared_ptr<Component>> &row : rows) {
+            const int rowHeight = getRowHeight(row);
+            for(const std::shared_ptr<Component> &comp : row) {
+                comp->growToHeight(rowHeight);
+            }
+        }
 
         int y = pos.y + ((size.y + totalHeight) / 2);
         for(const std::vector<std::shared_ptr<Component>> &row : rows) {
+            const int rowWidth  = getRowWidth(row);
             const int rowHeight = getRowHeight(row);
 
-            int x  = pos.x + ((size.x - totalWidth) / 2);
+            int x  = pos.x + ((size.x - rowWidth) / 2);
             y     -= rowHeight;
 
             for(const std::shared_ptr<Component> &comp : row) {
@@ -743,6 +755,28 @@ void growRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, con
     for(const std::shared_ptr<NLUI::Component> &comp : row) {
         comp->growToHeight(propHeight);
     }
+}
+
+int getRowWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row) {
+    int rowWidth = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : row) {
+        rowWidth += comp->getWidth();
+    }
+
+    return rowWidth;
+}
+
+int getRowMaxWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row) {
+    int rowMaxWidth = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : row) {
+        rowMaxWidth += comp->getMaxWidth();
+    }
+
+    return rowMaxWidth;
+}
+
+int getRowGrowthWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row) {
+    return std::max(0, getRowMaxWidth(row) - getRowHeight(row));
 }
 
 int getRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row) {
