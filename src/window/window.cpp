@@ -513,7 +513,11 @@ void NLUI::Window::removeComponent(Component *const component) {
     }
 }
 
-void NLUI::Window::doLayout(const bool forceWidth, const bool forceHeight) {
+void NLUI::Window::layoutRoot() {
+    doLayout();
+}
+
+void NLUI::Window::doLayout() {
     if(component != nullptr) {
         // const ivec2 minimumSize = component->getMinimumSize();
 
