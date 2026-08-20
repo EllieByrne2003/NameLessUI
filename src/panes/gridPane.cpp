@@ -584,7 +584,7 @@ void NLUI::GridPane::removeComponent(Component *const component) {
     }  
 }
 
-void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
+void NLUI::GridPane::doLayout() {
     // Propose current size to each
     for(int i = 0; i < rows * cols; i++) {
         std::shared_ptr<Component> &comp = components[i];
@@ -681,39 +681,35 @@ void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
                 totalHeight -= decHeight;
             }
 
-            if(forceHeight) {
-                // Set to below mins (proportionately)
-                const int reduction   = totalHeight - size.y;
-                const int totalBefore = totalHeight;
-                for(int row = 0; row < rows; row++) {
-                    const int rowHeight = getRowHeight(row);
+            // Set to below mins (proportionately)
+            const int reduction   = totalHeight - size.y;
+            const int totalBefore = totalHeight;
+            for(int row = 0; row < rows; row++) {
+                const int rowHeight = getRowHeight(row);
 
-                    const int decHeight = reduction * (float(rowHeight) / float(totalBefore));
+                const int decHeight = reduction * (float(rowHeight) / float(totalBefore));
 
-                    shrinkRowHeight(row, decHeight);
-                    totalHeight -= decHeight;
-                }
+                shrinkRowHeight(row, decHeight);
+                totalHeight -= decHeight;
+            }
 
-                // Reduce largest height by one until fit
-                while(totalHeight > size.y) {
-                    // Get largest height
-                    int tallestRow = 0;
-                    int tallestHeight = getRowHeight(0);
-                    for(int row = 1; row < rows; row++) {
-                        const int rowheight = getRowHeight(row);
+            // Reduce largest height by one until fit
+            while(totalHeight > size.y) {
+                // Get largest height
+                int tallestRow = 0;
+                int tallestHeight = getRowHeight(0);
+                for(int row = 1; row < rows; row++) {
+                    const int rowheight = getRowHeight(row);
 
-                        if(tallestHeight < rowheight) {
-                            tallestRow = row;
-                            tallestHeight = rowheight;
-                        }
+                    if(tallestHeight < rowheight) {
+                        tallestRow = row;
+                        tallestHeight = rowheight;
                     }
-
-                    // Take 1 from it
-                    shrinkRowHeight(tallestRow, 1);
-                    totalHeight--;
                 }
-            } else {
-                size.y = totalHeight;
+
+                // Take 1 from it
+                shrinkRowHeight(tallestRow, 1);
+                totalHeight--;
             }
         }
     }
@@ -804,40 +800,36 @@ void NLUI::GridPane::doLayout(const bool forceWidth, const bool forceHeight) {
                 shrinkColWidth(col, decWidth);
                 totalWidth -= decWidth;
             }
-    
-            if(forceWidth) {
-                // Set below mins (proportionately)
-                const int reduction   = totalWidth - size.x;
-                const int totalBefore = totalWidth;
-                for(int col = 0; col < cols; col++) {
+
+            // Set below mins (proportionately)
+            const int reduction   = totalWidth - size.x;
+            const int totalBefore = totalWidth;
+            for(int col = 0; col < cols; col++) {
+                const int colWidth = getColWidth(col);
+
+                const int decWidth = reduction * (float(colWidth) / float(totalBefore));
+
+                shrinkColWidth(col, decWidth);
+                totalWidth -= decWidth;
+            }
+
+            // Reduce largest width by one until fit
+            while(totalWidth > size.x) {
+                // Get largest width
+                int widestCol = 0;
+                int widestWidth = getColWidth(0);
+                for(int col = 1; col < cols; col++) {
                     const int colWidth = getColWidth(col);
 
-                    const int decWidth = reduction * (float(colWidth) / float(totalBefore));
-
-                    shrinkColWidth(col, decWidth);
-                    totalWidth -= decWidth;
-                }
-
-                // Reduce largest width by one until fit
-                while(totalWidth > size.x) {
-                    // Get largest width
-                    int widestCol = 0;
-                    int widestWidth = getColWidth(0);
-                    for(int col = 1; col < cols; col++) {
-                        const int colWidth = getColWidth(col);
-
-                        if(widestWidth < colWidth) {
-                            widestCol = col;
-                            widestWidth = colWidth;
-                        }
+                    if(widestWidth < colWidth) {
+                        widestCol = col;
+                        widestWidth = colWidth;
                     }
-
-                    // Take 1 from it
-                    shrinkColWidth(widestCol, 1);
-                    totalWidth--;
                 }
-            } else {
-                size.x = totalWidth;
+
+                // Take 1 from it
+                shrinkColWidth(widestCol, 1);
+                totalWidth--;
             }
         }
     }

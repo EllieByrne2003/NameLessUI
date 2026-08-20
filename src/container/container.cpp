@@ -19,7 +19,3 @@
 
 
 NLUI::Container::~Container() = default;
-
-void NLUI::Container::doLayout(const bool force) {
-    doLayout(force, force);
-}

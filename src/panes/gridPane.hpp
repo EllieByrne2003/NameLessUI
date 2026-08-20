@@ -91,7 +91,7 @@ namespace NLUI {
         virtual void removeComponent(const std::shared_ptr<Component> &component) override;
         virtual void removeComponent(Component *const component) override;
 
-        virtual void doLayout(const bool forceWidth, const bool forceHeight) override;
+        virtual void doLayout() override;
 
         // New functions
         void addComponent(const std::shared_ptr<Component> &component, const int row, const int col); // TODO one to remove it

@@ -43,8 +43,7 @@ namespace NLUI {
 
 
         // Layout components and get sizes
-        void doLayout(const bool force = true);
-        virtual void doLayout(const bool forceWidth, const bool forceHeight) = 0;
-        // virtual glm::ivec2 simulateLayout(glm::ivec2 &size, const bool force = true) const = 0; // TODO this is to get the size // TODO maybe make ones to return answer in different format
+        virtual void doLayout() = 0;
+        // virtual glm::ivec2 simulateLayout() const = 0; // TODO this is to get the size // TODO maybe make ones to return answer in different format
     };
 };
