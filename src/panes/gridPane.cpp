@@ -279,7 +279,7 @@ void NLUI::GridPane::getPrefSize(int &prefWidth, int &prefHeight) const {
         }
     }
 
-    int sumPrefWidth  = 0;
+    int sumPrefWidth = 0;
     for(int col = 0; col < cols; col++) {
         sumPrefWidth += colPrefWidths[col];
     }
@@ -313,7 +313,7 @@ glm::ivec2 NLUI::GridPane::getPrefSize() const {
         }
     }
 
-    int prefWidth  = 0;
+    int prefWidth = 0;
     for(int col = 0; col < cols; col++) {
         prefWidth += colPrefWidths[col];
     }
@@ -364,7 +364,7 @@ void NLUI::GridPane::getMinSize(int &minWidth, int &minHeight) const {
         }
     }
 
-    int sumMinWidth  = 0;
+    int sumMinWidth = 0;
     for(int col = 0; col < cols; col++) {
         sumMinWidth += colMinWidths[col];
     }
@@ -399,7 +399,7 @@ glm::ivec2 NLUI::GridPane::getMinSize() const {
         }
     }
 
-    int sumMinWidth  = 0;
+    int sumMinWidth = 0;
     for(int col = 0; col < cols; col++) {
         sumMinWidth += colMinWidths[col];
     }
@@ -451,7 +451,7 @@ void NLUI::GridPane::getMaxSize(int &maxWidth, int &maxHeight) const {
         }
     }
 
-    int sumMaxWidth  = 0;
+    int sumMaxWidth = 0;
     for(int col = 0; col < cols; col++) {
         sumMaxWidth += colMaxWidths[col];
     }
@@ -486,7 +486,7 @@ glm::ivec2 NLUI::GridPane::getMaxSize() const {
         }
     }
 
-    int sumMaxWidth  = 0;
+    int sumMaxWidth = 0;
     for(int col = 0; col < cols; col++) {
         sumMaxWidth += colMaxWidths[col];
     }
