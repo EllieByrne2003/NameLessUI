@@ -19,6 +19,9 @@ using namespace glm;
 void shrinkRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, const int decHeight);
 void growRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, const int incHeight);
 
+void shrinkColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col, const int decWidth);
+void growColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col, const int incWidth);
+
 int getRowWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowMaxWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowGrowthWidth(const std::vector<std::shared_ptr<NLUI::Component>> &row);
@@ -28,6 +31,16 @@ int getRowMinHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowMaxHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowExtraHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
 int getRowGrowthHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row);
+
+int getColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColMinWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColMaxWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColExtraWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColGrowthWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+
+int getColHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColMaxHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col);
+int getColGrowthHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col);
 
 // Type aliases
 
@@ -728,7 +741,207 @@ void NLUI::FlowPane::doLayout() {
             }
         }
     } else {
-        // TODO finish this
+        std::vector<std::shared_ptr<Component>> currentCol;
+        int currentColHeight = 0;
+
+        int currentColWidth    = 0;
+        int currentColMinWidth = 0;
+        int currentColMaxWidth = 0;
+
+        int totalHeight = 0;
+        // int totalMinWidth = 0;
+        // int totalMaxWidth = 0;
+
+        int totalWidth = 0;
+        int totalMinWidth = 0;
+        int totalMaxWidth = 0;
+
+        for(std::shared_ptr<Component> &comp : components) {
+            if(comp->getHeight() > size.y) {
+                comp->shrinkToHeight(size.y);
+            }
+
+            if(currentColHeight + comp->getHeight() > size.y) {
+                cols.push_back(currentCol);
+                currentCol.clear();
+
+                totalWidth    += currentColWidth;
+                totalMinWidth += currentColMinWidth;
+                totalMaxWidth += currentColMaxWidth;
+
+                totalHeight = std::max(totalHeight, currentColHeight);
+
+                currentColHeight   = 0;
+                currentColWidth    = 0;
+                currentColMinWidth = 0;
+                currentColMaxWidth = 0;
+            }
+
+            currentCol.push_back(comp);
+
+            currentColHeight   += comp->getHeight();
+            currentColWidth     = std::max(currentColWidth,    comp->getWidth());
+            currentColMinWidth  = std::max(currentColMinWidth, comp->getMinWidth());
+            currentColMaxWidth  = std::max(currentColMaxWidth, comp->getMaxWidth());
+        }
+
+        if(currentCol.size() > 0) {
+            cols.push_back(currentCol);
+            currentCol.clear();
+
+            totalWidth    += currentColWidth;
+            totalMinWidth += currentColMinWidth;
+            totalMaxWidth += currentColMaxWidth;
+
+            totalHeight = std::max(totalHeight, currentColHeight);
+
+            currentColHeight   = 0;
+            currentColWidth    = 0;
+            currentColMinWidth = 0;
+            currentColMaxWidth = 0;
+        }
+        
+        int totalExtraWidth  = std::max(0, totalWidth - totalMinWidth);
+        int totalGrowthWidth = std::max(0, totalMaxWidth - totalWidth);
+
+        if(totalWidth < size.x) {
+            const int increase          = std::min(size.x - totalWidth, totalGrowthWidth);
+            const int totalGrowthBefore = totalGrowthWidth;
+
+            // Increase to max or to fill space proporitonally
+            for(std::vector<std::shared_ptr<Component>> &col : cols) {
+                const int colGrowthWidth = getColGrowthWidth(col);
+
+                const int incWidth = increase * (float(colGrowthWidth) / float(totalGrowthBefore));
+
+                growColWidth(col, incWidth);
+                totalWidth       += incWidth;
+                totalGrowthWidth -= incWidth;
+            }
+
+            // Increase col with largest growth until fit (or no more growthWidth)
+            while(totalWidth < size.x && totalGrowthWidth > 0) {
+                // Get greateset width growth
+                int greatestGrowthColIndex = 0;
+                int greatestGrowth = getColGrowthWidth(cols[greatestGrowthColIndex]);
+
+                for(int i = 1; i < cols.size(); i++) {
+                    const std::vector<std::shared_ptr<NLUI::Component>> &col = cols[i];
+                    const int colGrowth = getColGrowthWidth(col);
+
+                    if(greatestGrowth < colGrowth) {
+                        greatestGrowthColIndex = i;
+                        greatestGrowth = colGrowth;
+                    }
+                }
+
+                growColWidth(cols[greatestGrowthColIndex], 1);
+                totalWidth++;
+                totalGrowthWidth--;
+            }
+        } else if(totalWidth > size.x) {
+            if(totalWidth - totalExtraWidth <= size.x) {
+                // Remove proporitionally
+                const int reduction = totalWidth - size.x;
+                for(std::vector<std::shared_ptr<Component>> &col : cols) {
+                    const int colExtraWidth = getColExtraWidth(col);
+
+                    const int decWidth = reduction * (float(colExtraWidth) / float(totalExtraWidth));
+
+                    shrinkColWidth(col, decWidth);
+                    totalWidth -= decWidth;
+                }
+
+                // Remove 1 from col with larget extra width
+                while(totalWidth > size.x) {
+                    // Get largest extra
+                    std::vector<std::shared_ptr<NLUI::Component>> &largestExtraCol = cols[0];
+                    int largestExtraWidth = getColExtraWidth(largestExtraCol);
+                    for(int i = 1; i < cols.size(); i++) {
+                        const std::vector<std::shared_ptr<NLUI::Component>> &col = cols[i];
+                        const int colExtraWidth = getColExtraWidth(col);
+
+                        if(largestExtraWidth < colExtraWidth) {
+                            largestExtraCol = col;
+                            largestExtraWidth = colExtraWidth;
+                        }
+                    }
+
+                    // Take 1 from it
+                    shrinkColWidth(largestExtraCol, 1);
+                    totalWidth--;
+                }
+            } else {
+                // Set to mins // TODO should have function to minimise col widths
+                for(std::vector<std::shared_ptr<Component>> &col : cols) {
+                    const int decWidth = getColExtraWidth(col);
+
+                    shrinkColWidth(col, decWidth);
+                    totalWidth -= decWidth;
+                }
+
+                // Set to below mins (proportionately)
+                const int reduction   = totalWidth - size.x;
+                const int totalBefore = totalWidth;
+                for(std::vector<std::shared_ptr<Component>> &col : cols) {
+                    const int colWidth = getColWidth(col);
+
+                    const int decWidth = reduction * (float(colWidth) / float(totalBefore));
+
+                    shrinkColWidth(col, decWidth);
+                    totalWidth -= decWidth;
+                }
+
+                // Reduce largest width by one until fit
+                while(totalWidth > size.x) {
+                    // Get largest width
+                    int tallestColIndex = 0;
+                    int tallestWidth = getColWidth(cols[tallestColIndex]);
+                    for(int i = 1; i < cols.size(); i++) {
+                        const std::vector<std::shared_ptr<NLUI::Component>> &col = cols[i];
+                        const int colWidth = getColWidth(col);
+
+                        if(tallestWidth < colWidth) {
+                            tallestColIndex = i;
+                            tallestWidth = colWidth;
+                        }
+                    }
+
+                    // Take 1 from it
+                    shrinkColWidth(cols[tallestColIndex], 1);
+                    totalWidth--;
+                }
+            }
+        }
+
+        // TODO increase component width to fill full space
+        // TODO maybe offser a flag for that? Pack?
+        // TODO this is soooooo messy, make it a private function?
+        for(const std::vector<std::shared_ptr<Component>> &col : cols) {
+            const int colWidth = getColWidth(col);
+            for(const std::shared_ptr<Component> &comp : col) {
+                comp->growToWidth(colWidth);
+            }
+        }
+
+        int x = pos.x + ((size.x - totalWidth) / 2);
+        for(const std::vector<std::shared_ptr<Component>> &col : cols) {
+            const int colWidth  = getColWidth(col);
+            const int colHeight = getColHeight(col);
+
+            int y = pos.y + ((size.y - colHeight) / 2);
+
+            for(const std::shared_ptr<Component> &comp : col) {
+                const int offset = (colWidth - comp->getWidth()) / 2;
+
+                comp->setXPos(x + offset);
+                comp->setYPos(y);
+
+                y += comp->getHeight();
+            }
+
+            x += colWidth;
+        }
     }
 }
 
@@ -754,6 +967,24 @@ void growRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, con
 
     for(const std::shared_ptr<NLUI::Component> &comp : row) {
         comp->growToHeight(propHeight);
+    }
+}
+
+void shrinkColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col, const int decWidth) {
+    const int colWidth  = getColWidth(col);
+    const int propWidth = colWidth - decWidth;
+
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        comp->shrinkToWidth(propWidth);
+    }
+}
+
+void growColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col, const int incWidth) {
+    const int colWidth  = getColWidth(col);
+    const int propWidth = colWidth + incWidth;
+
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        comp->growToWidth(propWidth);
     }
 }
 
@@ -812,4 +1043,62 @@ int getRowExtraHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row) 
 
 int getRowGrowthHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row) {
     return std::max(0, getRowMaxHeight(row) - getRowHeight(row));
+}
+
+int getColWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    int colWidth = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        colWidth = std::max(colWidth, comp->getWidth());
+    }
+
+    return colWidth;
+}
+
+int getColMinWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    int colMinWidth = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        colMinWidth = std::max(colMinWidth, comp->getMinWidth());
+    }
+
+    return colMinWidth;
+}
+
+int getColMaxWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    int colMaxWidth = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        colMaxWidth = std::max(colMaxWidth, comp->getMaxWidth());
+    }
+
+    return colMaxWidth;
+}
+
+int getColExtraWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    return std::max(0, getColWidth(col) - getColMinWidth(col));
+}
+
+int getColGrowthWidth(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    return std::max(0, getColMaxWidth(col) - getColWidth(col));
+}
+
+int getColHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    int colHeight = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        colHeight += comp->getHeight();
+    }
+
+    return colHeight;
+}
+
+int getColMaxHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    int colMinHeight = 0;
+    for(const std::shared_ptr<NLUI::Component> &comp : col) {
+        colMinHeight += comp->getMaxHeight();
+    }
+
+    return colMinHeight;
+
+}
+
+int getColGrowthHeight(const std::vector<std::shared_ptr<NLUI::Component>> &col) {
+    return std::max(0, getColMaxHeight(col) - getColHeight(col));
 }
