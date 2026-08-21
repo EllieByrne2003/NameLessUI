@@ -38,7 +38,7 @@ int main() {
         return -1;
     }
 
-    std::shared_ptr<FlowPane> mainPane = FlowPane::create();
+    std::shared_ptr<FlowPane> mainPane = FlowPane::create(false);
     mainPane->setBackgroundColour(0.5, 0.5, 0.5);
 
     std::shared_ptr<Spacer> spacer1 = Spacer::create(ivec2(400, 100), ivec2(300, 50), ivec2(600, 200));
