@@ -20,7 +20,7 @@ using namespace glm;
 
 
 NLUI::Spacer::Spacer(const glm::ivec2 &prefSize, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Component(minSize, maxSize),
-    preferredSize(prefSize) {
+    prefSize(prefSize) {
 
 }
 
@@ -32,40 +32,41 @@ std::shared_ptr<NLUI::Spacer> NLUI::Spacer::create(const glm::ivec2 &prefSize, c
     return std::shared_ptr<Spacer>(new Spacer(prefSize, minSize, maxSize));
 }
 
-void NLUI::Spacer::getPreferredSize(int &preferredWidth, int &preferredHeight) const {
-    preferredWidth  = preferredSize.x;
-    preferredHeight = preferredSize.y;
+void NLUI::Spacer::getPrefSize(int &prefWidth, int &prefHeight) const {
+    prefWidth  = prefSize.x;
+    prefHeight = prefSize.y; 
 }
 
-ivec2 NLUI::Spacer::getPreferredSize() const {
-    return preferredSize;
+glm::ivec2 NLUI::Spacer::getPrefSize() const {
+    return prefSize;
 }
 
-int NLUI::Spacer::getPreferredWidth() const {
-    return preferredSize.x;
+int NLUI::Spacer::getPrefWidth() const {
+    return prefSize.x;
 }
 
-int NLUI::Spacer::getPreferredHeight() const {
-    return preferredSize.y;
+int NLUI::Spacer::getPrefHeight() const {
+    return prefSize.y;
 }
 
-void NLUI::Spacer::resize() {
+// TODO maybe give an empty one in component.cpp and remove this?
+void NLUI::Spacer::onResize() {
 
 }
 
 void NLUI::Spacer::setPreferredSize(const int preferredWidth, const int preferredHeight) {
-    preferredSize.x = preferredWidth;
-    preferredSize.y = preferredHeight;
+    prefSize.x = preferredWidth;
+    prefSize.y = preferredHeight;
 }
 
 void NLUI::Spacer::setPreferredSize(const ivec2 &preferredSize) {
-    this->preferredSize = preferredSize;
+    this->prefSize = preferredSize;
 }
 
 void NLUI::Spacer::setPreferredWidth(const int preferredWidth) {
-    preferredSize.x = preferredWidth;
+    prefSize.x = preferredWidth;
 }
 
 void NLUI::Spacer::setPreferredHeight(const int preferredHeight) {
-    preferredSize.y = preferredHeight;
+    prefSize.y = preferredHeight;
 }

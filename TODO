@@ -7,12 +7,17 @@ Cache min, pref and max sizes on resize to reduce calculation
 
 Create functions to remove listener functions
 
-All components should have events passed, can override as they like    (Should be called propagate or something)
+All components should have events passed, can override as they like (Should be called propagate or something)
 
 Implement textboxes
+Implement boxPanes (all on same row or column)
 
 Allow panels to have minimum sizes (returned if minimum size of children smaller)
 
-Create basic shaders to render solid coloured boxes and textured boxes (Should include clip space)
-
 Change all sizes to use uvec2
+
+Add padding variables to panes. Must be counted in max and pref sizes (as part of sum sizes). Must be uniform (all same values)
+
+Reject null pointer in add component stuff
+
+Add proper guards to shrinkToX, growToY, etc

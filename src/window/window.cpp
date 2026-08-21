@@ -217,6 +217,7 @@ void NLUI::Window::startDrawing() {
     ivec2 frameBufferSize = getFrameBufferSize();
     glViewport(0, 0, frameBufferSize.x, frameBufferSize.y);
 
+    // std::cout << "w: " << frameBufferSize.x << ", h: " << frameBufferSize.y << std::endl;
     // TODO pass matrices for other shaders too
     // Pass uniforms for all
     mat4 mvp = glm::ortho(0.0f, (float) frameBufferSize.x, 0.0f, (float) frameBufferSize.y, -1.0f, 1.0f);
@@ -349,7 +350,6 @@ void NLUI::Window::mouseScrolled(const double deltaX, const double deltaY) {
 void NLUI::Window::windowResized(const int width, const int height) {
     if(component != nullptr) {
         component->setSize(width, height);
-        component->resize();
     }
 }
 
@@ -488,13 +488,13 @@ void NLUI::Window::setComponent(const std::shared_ptr<Component> &component) {
     this->component = component;
 
     // TODO handle minimum sizes
-    const ivec2 minimumSize = component->getMinimumSize();
-    glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    glfwSetWindowSize(window, minimumSize.x, minimumSize.y);
+    // const ivec2 minimumSize = component->getMinimumSize();
+    // glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    // glfwSetWindowSize(window, minimumSize.x, minimumSize.y);
 
     component->setPos(0, 0);
     component->setSize(this->getFrameBufferSize());
-    component->resize();
+    // component->resize();
 }
 
 void NLUI::Window::removeComponent(const std::shared_ptr<Component> &component) {
@@ -513,16 +513,20 @@ void NLUI::Window::removeComponent(Component *const component) {
     }
 }
 
-void NLUI::Window::validate() {
-    if(component != nullptr) {
-        const ivec2 minimumSize = component->getMinimumSize();
+void NLUI::Window::layoutRoot() {
+    doLayout();
+}
 
-        // Ensure the component can fit in the space provided
-        glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+void NLUI::Window::doLayout() {
+    if(component != nullptr) {
+        // const ivec2 minimumSize = component->getMinimumSize();
+
+        // // Ensure the component can fit in the space provided
+        // glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
         // Call Give it the space it has and call resize
         component->setSize(getFrameBufferSize());
-        component->resize();
+        // component->resize();
     }
 }
 

@@ -22,7 +22,7 @@ using namespace glm;
 
 
 NLUI::Component::Component(const glm::ivec2 &minSize, const glm::ivec2 &maxSize) :
-    minimumSize(minSize), maxSize(maxSize) {
+    minSize(minSize), maxSize(maxSize) {
 
 }
 
@@ -45,9 +45,9 @@ void NLUI::Component::removeParent() {
     }
 }
 
-void NLUI::Component::validateParent() {
+void NLUI::Component::layoutRoot() {
     if(parent != nullptr) {
-        parent->validate();
+        parent->layoutRoot();
     }
 }
 
@@ -56,63 +56,241 @@ void NLUI::Component::draw() const {
     Graphics::drawSolidQuad(backgroundColour, pos, size);
 }
 
-void NLUI::Component::getMinimumSize(int &minimumWidth, int &minimumHeight) const {
-    minimumWidth  = minimumSize.x;
-    minimumHeight = minimumSize.y;
+void NLUI::Component::setSize(const int width, const int height) {
+    size.x = width;
+    size.y = height;
+
+    onResize();
 }
 
-ivec2 NLUI::Component::getMinimumSize() const {
-    return ivec2(getMinimumWidth(), getMinimumHeight());
+void NLUI::Component::setSize(const glm::ivec2 &size) {
+    this->size = size;
+
+    onResize();
 }
 
-int NLUI::Component::getMinimumWidth() const {
-    return minimumSize.x;
+void NLUI::Component::setWidth(const int width) {
+    size.x = width;
+
+    onResize();
 }
 
-int NLUI::Component::getMinimumHeight() const {
-    return minimumSize.y;
+void NLUI::Component::setHeight(const int height) {
+    size.y = height;
+
+    onResize();
 }
 
-void NLUI::Component::setMinimumSize(const int minimumWidth, const int minimumHeight) {
-    setMinimumWidth(minimumWidth);
-    setMinimumHeight(minimumHeight);
+void NLUI::Component::proposeSize(const int propWidth, const int propHeight) {
+    const glm::ivec2 propSize = glm::ivec2(propWidth, propHeight);
 
-    // Validate parent can fit with new minimums
-    validateParent();
+    const glm::ivec2 prefSize = getPrefSize();
+    const glm::ivec2 minSize  = getMinSize();
+    const glm::ivec2 maxSize  = getMaxSize();
+
+    size = glm::min(prefSize, glm::min(maxSize, max(minSize, propSize)));
+
+    onResize();
 }
 
-void NLUI::Component::setMinimumSize(const ivec2 &minimumSize) {
-    setMinimumWidth(minimumSize.x);
-    setMinimumHeight(minimumSize.y);
+void NLUI::Component::proposeSize(const glm::ivec2 &propSize) {
+    const glm::ivec2 prefSize = getPrefSize();
+    const glm::ivec2 minSize  = getMinSize();
+    const glm::ivec2 maxSize  = getMaxSize();
 
-    // Validate parent can fit with new minimums
-    validateParent();
+    size = glm::min(prefSize, glm::min(maxSize, glm::max(minSize, propSize)));
+
+    onResize();
 }
 
-void NLUI::Component::setMinimumWidth(const int minimumWidth) {
-    minimumSize.x = minimumWidth;
+void NLUI::Component::proposeWidth(const int propWidth) {
+    const int prefWidth = getPrefWidth();
+    const int minWidth  = getMinWidth();
+    const int maxWidth  = getMaxWidth();
 
-    // Validate parent can fit with new minimums
-    validateParent();
-}
-        
-void NLUI::Component::setMinimumHeight(const int minimumHeight) {
-    minimumSize.y = minimumHeight;
+    size.x = std::min(prefWidth, std::min(maxWidth, std::max(minWidth, propWidth)));
 
-    // Validate parent can fit with new minimums
-    validateParent();
+    onResize();
 }
 
-void NLUI::Component::getPreferredSize(int &preferredWidth, int &preferredHeight) const {
-    preferredWidth  = getPreferredWidth();
-    preferredHeight = getPreferredHeight();
+void NLUI::Component::proposeHeight(const int propHeight) {
+    const int prefHeight = getPrefHeight();
+    const int minHeight  = getMinHeight();
+    const int maxHeight  = getMaxHeight();
+
+    size.y = std::min(prefHeight, std::min(maxHeight, std::max(minHeight, propHeight)));
+
+    onResize();
 }
 
-glm::ivec2 NLUI::Component::getPreferredSize() const {
-    const int preferredWidth  = getPreferredWidth();
-    const int preferredHeight = getPreferredHeight();
+void NLUI::Component::shrinkSize(const int decWidth, const int decHeight) {
+    size.x -= decWidth;
+    size.y -= decHeight;
 
-    return ivec2(preferredWidth, preferredHeight);
+    onResize();
+}
+
+void NLUI::Component::shrinkSize(const glm::ivec2 &decSize) {
+    size -= decSize;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkWidth(const int decWidth) {
+    size.x -= decWidth;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkHeight(const int decHeight) {
+    size.y -= decHeight;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToSize(const int propWidth, const int propHeight) {
+    size.x = propWidth;
+    size.y = propHeight;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToSize(const glm::ivec2 &propSize) {
+    size = propSize;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToWidth(const int propWidth) {
+    size.x = propWidth;
+
+    onResize();
+}
+
+void NLUI::Component::shrinkToHeight(const int propHeight) {
+    size.y = propHeight;
+
+    onResize();
+}
+
+void NLUI::Component::growSize(const int incWidth, const int incHeight) {
+    const glm::ivec2 propSize = size + glm::ivec2(incWidth, incHeight);
+    const glm::ivec2 maxSize  = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growSize(const glm::ivec2 &incSize) {
+    const glm::ivec2 propSize = size + incSize;
+    const glm::ivec2 maxSize  = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growWidth(const int incWidth) {
+    const int propWidth = size.x + incWidth;
+    const int maxWidth  = getMaxWidth();
+
+    size.x = std::min(propWidth, maxWidth);
+
+    onResize();
+}
+
+void NLUI::Component::growHeight(const int incHeight) {
+    const int propHeight = size.y + incHeight;
+    const int maxHeight  = getMaxHeight();
+
+    size.y = std::min(propHeight, maxHeight);
+
+    onResize();
+}
+
+void NLUI::Component::growToSize(const int propWidth, const int propHeight) {
+    const glm::ivec2 propSize = glm::ivec2(propWidth, propHeight);
+    const glm::ivec2 maxSize  = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growToSize(const glm::ivec2 &propSize) {
+    const glm::ivec2 maxSize = getMaxSize();
+
+    size = glm::min(propSize, maxSize);
+
+    onResize();
+}
+
+void NLUI::Component::growToWidth(const int propWidth) {
+    const int maxWidth = getMaxWidth();
+
+    size.x = std::min(propWidth, maxWidth);
+
+    onResize();
+}
+
+void NLUI::Component::growToHeight(const int propHeight) {
+    const int maxHeight = getMaxHeight();
+
+    size.y = std::min(propHeight, maxHeight);
+
+    onResize();
+}
+
+void NLUI::Component::setPos(const int xPos, const int yPos) {
+    pos.x = xPos;
+    pos.y = yPos;
+}
+
+void NLUI::Component::setPos(const glm::ivec2 &pos) {
+    this->pos = pos;
+}
+
+void NLUI::Component::setXPos(const int xPos) {
+    pos.x = xPos;
+}
+
+void NLUI::Component::setYPos(const int yPos) {
+    pos.y = yPos;
+}
+
+void NLUI::Component::setMinSize(const int minWidth, const int minHeight) {
+    minSize.x = minWidth;
+    minSize.y = minHeight;
+}
+
+void NLUI::Component::setMinSize(const glm::ivec2 &minSize) {
+    this->minSize = minSize;
+}
+
+void NLUI::Component::setMinWidth(const int minWidth) {
+    minSize.x = minWidth;
+}
+
+void NLUI::Component::setMinHeight(const int minHeight) {
+    minSize.y = minHeight;
+}
+
+void NLUI::Component::setMaxSize(const int maxWidth, const int maxHeight) {
+    maxSize.x = maxWidth;
+    maxSize.y = maxHeight;
+}
+
+void NLUI::Component::setMaxSize(const glm::ivec2 &maxSize) {
+    this->maxSize = maxSize;
+}
+
+void NLUI::Component::setMaxWidth(const int maxWidth) {
+    maxSize.x = maxWidth;
+}
+
+void NLUI::Component::setMaxHeight(const int maxHeight) {
+    maxSize.y = maxHeight;
 }
 
 void NLUI::Component::getSize(int &width, int &height) const {
@@ -132,6 +310,90 @@ int NLUI::Component::getHeight() const {
     return size.y;
 }
 
+void NLUI::Component::getMinSize(int &minWidth, int &minHeight) const {
+    minWidth  = minSize.x;
+    minHeight = minSize.y;
+}
+
+glm::ivec2 NLUI::Component::getMinSize() const {
+    return minSize;
+}
+
+int NLUI::Component::getMinWidth() const {
+    return minSize.x;
+}
+
+int NLUI::Component::getMinHeight() const {
+    return minSize.y;
+}
+
+void NLUI::Component::getMaxSize(int &maxWidth, int &maxHeight) const {
+    maxWidth  = maxSize.x;
+    maxHeight = maxSize.y;
+}
+
+glm::ivec2 NLUI::Component::getMaxSize() const {
+    return maxSize;
+}
+
+int NLUI::Component::getMaxWidth() const {
+    return maxSize.x;
+}
+
+int NLUI::Component::getMaxHeight() const {
+    return maxSize.y;
+}
+
+void NLUI::Component::getExtraSize(int &extraWidth, int &extraHeight) const {
+    const glm::ivec2 minSize = getMinSize();
+    
+    extraWidth  = size.x - minSize.x;
+    extraHeight = size.y - minSize.y;
+}
+
+glm::ivec2 NLUI::Component::getExtraSize() const {
+    const glm::ivec2 minSize = getMinSize();
+
+    return size - minSize;
+}
+
+int NLUI::Component::getExtraWidth() const {
+    const int minWidth = getMinWidth();
+
+    return size.x - minWidth;
+}
+
+int NLUI::Component::getExtraHeight() const {
+    const int minHeight = getMinHeight();
+
+    return size.y - minHeight;
+}
+
+void NLUI::Component::getGrowthSize(int &growthWidth, int &growthHeight) const {
+    const glm::ivec2 maxSize = getMaxSize();
+
+    growthWidth  = maxSize.x - size.x;
+    growthHeight = maxSize.y - size.y;
+}
+
+glm::ivec2 NLUI::Component::getGrowthSize() const {
+    const glm::ivec2 maxSize = getMaxSize();
+
+    return maxSize - size;
+}
+
+int NLUI::Component::getGrowthWidth() const {
+    const int maxWidth = getMaxWidth();
+
+    return maxWidth - size.x;
+}
+
+int NLUI::Component::getGrowthHeight() const {
+    const int maxHeight = getMaxHeight();
+
+    return maxHeight - size.y;
+}
+
 void NLUI::Component::getPos(int &xPos, int &yPos) const {
     xPos = pos.x;
     yPos = pos.y;
@@ -147,40 +409,6 @@ int NLUI::Component::getXPos() const {
 
 int NLUI::Component::getYPos() const {
     return pos.y;
-}
-
-void NLUI::Component::setSize(const int width, const int height) {
-    size.x = width;
-    size.y = height;
-}
-
-void NLUI::Component::setSize(const ivec2 &size) {
-    this->size = size;
-}
-        
-void NLUI::Component::setWidth(const int width) {
-    size.x = width;
-}
-
-void NLUI::Component::setHeight(const int height) {
-    size.y = height;
-}
-
-void NLUI::Component::setPos(const int xPos, const int yPos) {
-    pos.x = xPos;
-    pos.y = yPos;
-}
-
-void NLUI::Component::setPos(const ivec2 &pos) {
-    this->pos = pos;
-}
-
-void NLUI::Component::setXPos(const int xPos) {
-    this->pos.x = xPos;
-}
-
-void NLUI::Component::setYPos(const int yPos) {
-    this->pos.y = yPos;
 }
 
 bool NLUI::Component::mouseInside(const double xPos, const double yPos) {

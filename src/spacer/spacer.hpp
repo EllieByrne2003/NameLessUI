@@ -21,7 +21,7 @@
 namespace NLUI {
     class Spacer final : public Component {
     private:
-        glm::ivec2 preferredSize;
+        glm::ivec2 prefSize;
 
     protected:
 
@@ -38,16 +38,13 @@ namespace NLUI {
 
         static std::shared_ptr<Spacer> create(const glm::ivec2 &prefSize, const glm::ivec2 &minSize = glm::ivec2(0, 0), const glm::ivec2 &maxSize = glm::ivec2(INT_MAX, INT_MAX));
 
-        // Override from Component
-        // Preferred size
-        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const override;
-        virtual glm::ivec2 getPreferredSize() const override;
+        // Overridden from Component
+        virtual void getPrefSize(int &prefWidth, int &prefHeight) const override;
+        virtual glm::ivec2 getPrefSize() const override;
+        virtual int getPrefWidth() const override;
+        virtual int getPrefHeight() const override;
 
-        virtual int getPreferredWidth() const override;
-        virtual int getPreferredHeight() const override;
-
-        // Resizing/positioning
-        virtual void resize() override; // TODO no need to implement empty function here, maybe remove and implement in Component
+        virtual void onResize() override;
 
         // New functions
         // Preferred size

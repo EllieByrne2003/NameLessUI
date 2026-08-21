@@ -23,17 +23,19 @@ typedef unsigned int GLuint;
 
 namespace NLUI {
     class Component {
+        friend class Container; // Can need to access private variables // TODO don't like this, but changes to window needed
     private:
-        Container *parent = nullptr;
-
-        glm::ivec2 minimumSize;
-        glm::ivec2 maxSize; // TODO add functions to change this
-
         glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     protected:
+        Container *parent = nullptr;
+        
         glm::ivec2 pos;
-        glm::ivec2 size;
+
+        // TODO make these private
+        glm::ivec2 size; 
+        glm::ivec2 minSize;
+        glm::ivec2 maxSize;
 
     public:
 
@@ -48,83 +50,100 @@ namespace NLUI {
 
         void setParent(Container *parent);
         void removeParent();
-        
-        void validateParent();
+        virtual void layoutRoot();
 
-
-        // static Component * readComponent(Logger &logger, const json &jsonComponent, const std::filesystem::path &dirPath);
-        // static Component * readComponent(Logger &logger, const std::filesystem::path &path);
-
+        // Function to draw self
         virtual void draw() const;
 
-        // Minimum size
-        void getMinimumSize(int &minimumWidth, int &minimumHeight) const;
-        glm::ivec2 getMinimumSize() const;
-
-        virtual int getMinimumWidth() const;
-        virtual int getMinimumHeight() const;
-
-        void setMinimumSize(const int minimumWidth, const int minimumHeight);
-        void setMinimumSize(const glm::ivec2 &minimumSize);
-
-        void setMinimumWidth(const int minimumWidth);
-        void setMinimumHeight(const int minimumHeight);
-
-        // TODO may be use this later?
-        // // Maximum size
-        // virtual void  getMaximumSize(const int availableWidth, const int availableHeight, int &maximumWidth, int &maximumHeight) const = 0;
-        // virtual ivec2 getMaximumSize(const int availableWidth, const int availableHeight) const = 0;
-
-        // virtual void  getMaximumSize(const ivec2 &availableSize, int &maximumWidth, int &maximumHeight) const = 0;
-        // virtual ivec2 getMaximumSize(const ivec2 &availableSize) const = 0;
-
-        // virtual int getMaximumWidth(const int availableWidth) const = 0;
-        // virtual int getMaximumHeight(const int availableHeight) const = 0;
-
-        // Preferred size
-        // virtual void  getPreferredSize(const int availableWidth, const int availableHeight, int &preferredWidth, int &preferredHeight) const = 0;
-        // virtual ivec2 getPreferredSize(const int availableWidth, const int availableHeight) const = 0;
-
-        // virtual void  getPreferredSize(const ivec2 &availableSize, int &preferredWidth, int &preferredHeight) const = 0;
-        // virtual ivec2 getPreferredSize(const ivec2 &availableSize) const = 0;
-
-        // virtual int getPreferredWidth(const int availableWidth) const = 0;
-        // virtual int getPreferredHeight(const int availableHeight) const = 0;
-
-        virtual void getPreferredSize(int &preferredWidth, int &preferredHeight) const;
-        virtual glm::ivec2 getPreferredSize() const;
-
-        virtual int getPreferredWidth() const = 0;
-        virtual int getPreferredHeight() const = 0;
-
-        // Current size
-        void  getSize(int &width, int &height) const;
-        glm::ivec2 getSize() const;
-
-        int getWidth() const;
-        int getHeight() const;
-
-        // Current position
-        void  getPos(int &xPos, int &yPos) const;
-        glm::ivec2 getPos() const;
-
-        int getXPos() const;
-        int getYPos() const;
-
-        // Resizing/positioning
+        // Functions to set sizes
         void setSize(const int width, const int height);
         void setSize(const glm::ivec2 &size);
-
         void setWidth(const int width);
         void setHeight(const int height);
-        
+
+        // Functions to perform layout tasks
+        virtual void proposeSize(const int propWidth, const int propHeight);
+        virtual void proposeSize(const glm::ivec2 &propSize);
+        virtual void proposeWidth(const int propWidth);
+        virtual void proposeHeight(const int propHeight);
+
+        // TODO consider checks for growing and shrinking to make sure sizes increasing/decreasing as expected
+        void shrinkSize(const int decWidth, const int decHeight);
+        void shrinkSize(const glm::ivec2 &decSize);
+        void shrinkWidth(const int decWidth);
+        void shrinkHeight(const int decHeight);
+
+        void shrinkToSize(const int propWidth, const int propHeight);
+        void shrinkToSize(const glm::ivec2 &propSize);
+        void shrinkToWidth(const int propWidth);
+        void shrinkToHeight(const int propHeight);
+
+        void growSize(const int incWidth, const int incHeight);
+        void growSize(const glm::ivec2 &incSize);
+        void growWidth(const int incWidth);
+        void growHeight(const int incHeight);
+
+        void growToSize(const int propWidth, const int propHeight);
+        void growToSize(const glm::ivec2 &propSize);
+        void growToWidth(const int propWidth);
+        void growToHeight(const int propHeight);
+
+        // Functions to set positions
         void setPos(const int xPos, const int yPos);
         void setPos(const glm::ivec2 &pos);
-
         void setXPos(const int xPos);
         void setYPos(const int yPos);
 
-        virtual void resize() = 0;
+        // Functions to set limits
+        void setMinSize(const int minWidth, const int minHeight);
+        void setMinSize(const glm::ivec2 &minSize);
+        void setMinWidth(const int minWidth);
+        void setMinHeight(const int minHeight);
+
+        void setMaxSize(const int maxWidth, const int maxHeight);
+        void setMaxSize(const glm::ivec2 &maxSize);
+        void setMaxWidth(const int maxWidth);
+        void setMaxHeight(const int maxHeight);
+
+        // Functions to get sizes and data on them
+        void getSize(int &width, int &height) const;
+        glm::ivec2 getSize() const;
+        int getWidth() const;
+        int getHeight() const;
+
+        virtual void getPrefSize(int &prefWidth, int &prefHeight) const = 0;
+        virtual glm::ivec2 getPrefSize() const = 0;
+        virtual int getPrefWidth() const = 0;
+        virtual int getPrefHeight() const = 0;
+
+        virtual void getMinSize(int &minWidth, int &minHeight) const;
+        virtual glm::ivec2 getMinSize() const;
+        virtual int getMinWidth() const;
+        virtual int getMinHeight() const;
+
+        virtual void getMaxSize(int &maxWidth, int &maxHeight) const;
+        virtual glm::ivec2 getMaxSize() const;
+        virtual int getMaxWidth() const;
+        virtual int getMaxHeight() const;
+
+        void getExtraSize(int &extraWidth, int &extraHeight) const;
+        glm::ivec2 getExtraSize() const;
+        int getExtraWidth() const;
+        int getExtraHeight() const;
+
+        void getGrowthSize(int &growthWidth, int &growthHeight) const;
+        glm::ivec2 getGrowthSize() const;
+        int getGrowthWidth() const;
+        int getGrowthHeight() const;
+
+        // Functions to get positions
+        void getPos(int &xPos, int &yPos) const;
+        glm::ivec2 getPos() const;
+        int getXPos() const;
+        int getYPos() const;
+
+        // Handle size changes
+        virtual void onResize() = 0;
         
         // For handling focus
         virtual bool mouseInside(const double xPos, const double yPos);

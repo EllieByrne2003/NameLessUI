@@ -139,7 +139,9 @@ namespace NLUI {
         virtual void removeComponent(const std::shared_ptr<Component> &component) override;
         virtual void removeComponent(Component *const component) override;
 
-        // Handle children changing sizes
-        virtual void validate() override;
+        virtual void layoutRoot() override final;
+        virtual void doLayout() override;
     };
 };
+
+// TODO reorder this class to match order of function overriding/declaration

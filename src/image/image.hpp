@@ -47,21 +47,14 @@ namespace NLUI {
 
         static std::shared_ptr<Image> create(const std::filesystem::path &path, const unsigned int magLimit = 1, const unsigned int minLimit = 1, const bool keepRatio = true);
 
-        // Override from Component
+        // Overridden from Component
         virtual void draw() const override;
 
-        // Minimum size
-        // virtual void  getMinimumSize(int &minimumWidth, int &minimumHeight) const;
-        // virtual glm::ivec2 getMinimumSize() const;
+        virtual void getPrefSize(int &prefWidth, int &prefHeight) const override;
+        virtual glm::ivec2 getPrefSize() const override;
+        virtual int getPrefWidth() const override;
+        virtual int getPrefHeight() const override;
 
-        // virtual int getMinimumWidth() const override;
-        // virtual int getMinimumHeight() const override;
-
-        // Preferred size
-        virtual int getPreferredWidth() const override;
-        virtual int getPreferredHeight() const override;
-
-        // Resizing/positioning
-        virtual void resize() override;
+        virtual void onResize() override;
     };
 };
