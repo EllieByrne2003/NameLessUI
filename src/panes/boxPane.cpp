@@ -1,8 +1,7 @@
 #include "boxPane.hpp"
-#include <memory>
 
 // Includes from standard
-
+#include <memory>
 
 // Includes from third party libraries
 
@@ -336,6 +335,29 @@ bool NLUI::BoxPane::mouseInside(const double xPos, const double yPos) {
     }
 }
 
+void NLUI::BoxPane::removeComponent(const std::shared_ptr<Component> &component) {
+    if(component == nullptr) {
+        return;
+    }
+
+    // Find its position (if it has one)
+    std::vector<std::shared_ptr<Component>>::iterator pos = std::find(components.begin(), components.end(), component);
+
+    // If present remove it
+    if(pos != components.end()) {
+        std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
+
+        if(focus == copy) {
+            focus = nullptr;
+        }
+    
+        components.erase(pos);
+        copy->removeParent();
+
+        layoutRoot();
+    }
+}
+
 void NLUI::BoxPane::removeComponent(Component *const component) {
     if(component == nullptr) {
         return;
@@ -451,12 +473,15 @@ void NLUI::BoxPane::doLayout() {
                     }
 
                     components[greatestExtraCompIndex]->shrinkWidth(1);
-                    totalWidth++;
+                    totalWidth--;
                 }
             } else {
                 // Set to mins // TODO should have function to minimise row widths
                 for(std::shared_ptr<Component> &comp : components) {
-                    comp->shrinkToWidth(comp->getMinWidth());
+                    const int decWidth = comp->getExtraWidth();
+
+                    comp->shrinkWidth(decWidth);
+                    totalWidth -= decWidth;
                 }
 
                 // Set to below mins (proportionally)
@@ -475,7 +500,7 @@ void NLUI::BoxPane::doLayout() {
                 while(totalWidth > size.x) {
                     // Get largest width
                     int greatestWidthCompIndex = 0;
-                    int greatestWidth = components[0]->getExtraWidth();
+                    int greatestWidth = components[0]->getWidth();
 
                     for(int i = 1; i < components.size(); i++) {
                         const std::shared_ptr<NLUI::Component> &comp = components[i];
@@ -488,16 +513,156 @@ void NLUI::BoxPane::doLayout() {
                     }
 
                     components[greatestWidthCompIndex]->shrinkWidth(1);
-                    totalWidth++;
+                    totalWidth--;
                 }
             }
         }
-    } else {
+
+        int x = pos.x + ((size.x - totalWidth) / 2);
+        int y = pos.y;
         for(std::shared_ptr<Component> &comp : components) {
-            // Reduce widths to width, if needed
+            const int offset = (size.y - comp->getHeight()) / 2;
+
+            comp->setPos(x, y + offset);
+
+            x += comp->getWidth();
+        }
+    } else {
+        int totalHeight    = 0;
+        int totalMinHeight = 0;
+        int totalMaxHeight = 0;
+
+        for(std::shared_ptr<Component> &comp : components) {
+            // Reduce heights to height, if needed
             if(comp->getWidth() > size.x) {
                 comp->shrinkToWidth(size.x);
             }
+
+            totalHeight    += comp->getHeight();
+            totalMinHeight += comp->getMinHeight();
+            totalMaxHeight += comp->getMaxHeight();
+        }
+
+        int totalExtraHeight  = std::max(0, totalHeight - totalMinHeight);
+        int totalGrowthHeight = std::max(0, totalMaxHeight - totalHeight);
+
+        if(totalHeight < size.y) {
+            const int increase          = std::min(size.y - totalHeight, totalGrowthHeight);
+            const int totalGrowthBefore = totalGrowthHeight;
+
+            // Increase to max or to fill space proportionally
+            for(std::shared_ptr<Component> &comp : components) {
+                const int compGrowthHeight = comp->getGrowthHeight();
+
+                const int incHeight = increase * (float(compGrowthHeight) / float(totalGrowthBefore));
+
+                comp->growHeight(incHeight);
+                totalHeight       += incHeight;
+                totalGrowthHeight -= incHeight;
+            }
+
+            // Increase comp wioth largest growth until fit (or no more growthHeight)
+            while(totalHeight < size.y && totalGrowthHeight > 0) {
+                // Get greatest height growth
+                int greatestGrowthCompIndex = 0;
+                int greatestGrowth = components[0]->getGrowthHeight();
+
+                for(int i = 1; i < components.size(); i++) {
+                    const std::shared_ptr<NLUI::Component> &comp = components[i];
+                    const int compGrowth = comp->getGrowthHeight();
+
+                    if(greatestGrowth < compGrowth) {
+                        greatestGrowthCompIndex = i;
+                        greatestGrowth = compGrowth;
+                    }
+                }
+
+                components[greatestGrowthCompIndex]->growHeight(1);
+                totalHeight++;
+                totalGrowthHeight--;
+            }
+        } else if(totalHeight > size.y) {
+            if(totalHeight - totalExtraHeight <= size.y) {
+                // Remove proporitonally
+                const int decrease = totalHeight - size.y;
+                for(std::shared_ptr<Component> &comp : components) {
+                    const int compExtraHeight = comp->getExtraHeight();
+
+                    const int decHeight = decrease * (float(compExtraHeight) / float(totalGrowthHeight));
+
+                    comp->shrinkHeight(decHeight);
+                    totalHeight -= decHeight;
+                }
+
+                // remove 1 from row with largest extra height
+                while(totalHeight > size.y) {
+                    // Get largest extra height
+                    int greatestExtraCompIndex = 0;
+                    int greatestExtra = components[0]->getExtraHeight();
+
+                    for(int i = 1; i < components.size(); i++) {
+                        const std::shared_ptr<NLUI::Component> &comp = components[i];
+                        const int compExtra = comp->getExtraHeight();
+
+                        if(greatestExtra < compExtra) {
+                            greatestExtraCompIndex = i;
+                            greatestExtra = compExtra;
+                        }
+                    }
+
+                    components[greatestExtraCompIndex]->shrinkHeight(1);
+                    totalHeight--;
+                }
+            } else {
+                // Set to mins // TODO should have function to minimise row heights
+                for(std::shared_ptr<Component> &comp : components) {
+                    const int decHeight = comp->getExtraHeight();
+
+                    comp->shrinkHeight(decHeight);
+                    totalHeight -= decHeight;
+                }
+
+                // Set to below mins (proportionally)
+                const int decrease    = totalHeight - size.y;
+                const int totalBefore = totalHeight;
+                for(std::shared_ptr<Component> &comp : components) {
+                    const int compHeight = comp->getHeight();
+
+                    const int decHeight = decrease * (float(compHeight) / float(totalBefore));
+
+                    comp->shrinkHeight(decHeight);
+                    totalHeight -= decHeight;
+                }
+
+                // Reduce largest height by one until fit
+                while(totalHeight > size.y) {
+                    // Get largest height
+                    int greatestHeightCompIndex = 0;
+                    int greatestHeight = components[0]->getHeight();
+
+                    for(int i = 1; i < components.size(); i++) {
+                        const std::shared_ptr<NLUI::Component> &comp = components[i];
+                        const int compHeight = comp->getHeight();
+
+                        if(greatestHeight < compHeight) {
+                            greatestHeightCompIndex = i;
+                            greatestHeight = compHeight;
+                        }
+                    }
+
+                    components[greatestHeightCompIndex]->shrinkHeight(1);
+                    totalHeight--;
+                }
+            }
+        }
+
+        int x = pos.x;
+        int y = pos.y + ((size.y + totalHeight) / 2);
+        for(std::shared_ptr<Component> &comp : components) {
+            const int offset = (size.x - comp->getWidth()) / 2;
+            y -= comp->getHeight();
+
+            comp->setPos(x + offset, y);
         }
 
     }
