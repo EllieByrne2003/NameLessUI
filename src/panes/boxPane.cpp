@@ -362,7 +362,145 @@ void NLUI::BoxPane::removeComponent(Component *const component) {
 }
 
 void NLUI::BoxPane::doLayout() {
-    // TODO implement this
+    // Propose current size to each
+    for(std::shared_ptr<Component> &comp : components) {
+        comp->proposeSize(size);
+    }
+
+    if(horizontal) {
+        int totalWidth    = 0;
+        int totalMinWidth = 0;
+        int totalMaxWidth = 0;
+
+        for(std::shared_ptr<Component> &comp : components) {
+            // Reduce heights to height, if needed
+            if(comp->getHeight() > size.y) {
+                comp->shrinkToHeight(size.y);
+            }
+
+            totalWidth    += comp->getWidth();
+            totalMinWidth += comp->getMinWidth();
+            totalMaxWidth += comp->getMaxWidth();
+        }
+
+        int totalExtraWidth  = std::max(0, totalWidth - totalMinWidth);
+        int totalGrowthWidth = std::max(0, totalMaxWidth - totalWidth);
+
+        if(totalWidth < size.x) {
+            const int increase          = std::min(size.x - totalWidth, totalGrowthWidth);
+            const int totalGrowthBefore = totalGrowthWidth;
+
+            // Increase to max or to fill space proportionally
+            for(std::shared_ptr<Component> &comp : components) {
+                const int compGrowthWidth = comp->getGrowthWidth();
+
+                const int incWidth = increase * (float(compGrowthWidth) / float(totalGrowthBefore));
+
+                comp->growWidth(incWidth);
+                totalWidth       += incWidth;
+                totalGrowthWidth -= incWidth;
+            }
+
+            // Increase comp wioth largest growth until fit (or no more growthWidth)
+            while(totalWidth < size.x && totalGrowthWidth > 0) {
+                // Get greatest width growth
+                int greatestGrowthCompIndex = 0;
+                int greatestGrowth = components[0]->getGrowthWidth();
+
+                for(int i = 1; i < components.size(); i++) {
+                    const std::shared_ptr<NLUI::Component> &comp = components[i];
+                    const int compGrowth = comp->getGrowthWidth();
+
+                    if(greatestGrowth < compGrowth) {
+                        greatestGrowthCompIndex = i;
+                        greatestGrowth = compGrowth;
+                    }
+                }
+
+                components[greatestGrowthCompIndex]->growWidth(1);
+                totalWidth++;
+                totalGrowthWidth--;
+            }
+        } else if(totalWidth > size.x) {
+            if(totalWidth - totalExtraWidth <= size.x) {
+                // Remove proporitonally
+                const int decrease = totalWidth - size.x;
+                for(std::shared_ptr<Component> &comp : components) {
+                    const int compExtraWidth = comp->getExtraWidth();
+
+                    const int decWidth = decrease * (float(compExtraWidth) / float(totalGrowthWidth));
+
+                    comp->shrinkWidth(decWidth);
+                    totalWidth -= decWidth;
+                }
+
+                // remove 1 from row with largest extra width
+                while(totalWidth > size.x) {
+                    // Get largest extra width
+                    int greatestExtraCompIndex = 0;
+                    int greatestExtra = components[0]->getExtraWidth();
+
+                    for(int i = 1; i < components.size(); i++) {
+                        const std::shared_ptr<NLUI::Component> &comp = components[i];
+                        const int compExtra = comp->getExtraWidth();
+
+                        if(greatestExtra < compExtra) {
+                            greatestExtraCompIndex = i;
+                            greatestExtra = compExtra;
+                        }
+                    }
+
+                    components[greatestExtraCompIndex]->shrinkWidth(1);
+                    totalWidth++;
+                }
+            } else {
+                // Set to mins // TODO should have function to minimise row widths
+                for(std::shared_ptr<Component> &comp : components) {
+                    comp->shrinkToWidth(comp->getMinWidth());
+                }
+
+                // Set to below mins (proportionally)
+                const int decrease    = totalWidth - size.x;
+                const int totalBefore = totalWidth;
+                for(std::shared_ptr<Component> &comp : components) {
+                    const int compWidth = comp->getWidth();
+
+                    const int decWidth = decrease * (float(compWidth) / float(totalBefore));
+
+                    comp->shrinkWidth(decWidth);
+                    totalWidth -= decWidth;
+                }
+
+                // Reduce largest width by one until fit
+                while(totalWidth > size.x) {
+                    // Get largest width
+                    int greatestWidthCompIndex = 0;
+                    int greatestWidth = components[0]->getExtraWidth();
+
+                    for(int i = 1; i < components.size(); i++) {
+                        const std::shared_ptr<NLUI::Component> &comp = components[i];
+                        const int compWidth = comp->getWidth();
+
+                        if(greatestWidth < compWidth) {
+                            greatestWidthCompIndex = i;
+                            greatestWidth = compWidth;
+                        }
+                    }
+
+                    components[greatestWidthCompIndex]->shrinkWidth(1);
+                    totalWidth++;
+                }
+            }
+        }
+    } else {
+        for(std::shared_ptr<Component> &comp : components) {
+            // Reduce widths to width, if needed
+            if(comp->getWidth() > size.x) {
+                comp->shrinkToWidth(size.x);
+            }
+        }
+
+    }
 }
 
 void NLUI::BoxPane::addComponent(const std::shared_ptr<Component> &component) {
