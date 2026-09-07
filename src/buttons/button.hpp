@@ -10,7 +10,7 @@
 
 
 // Includes from project
-#include "../component/component.hpp"
+#include "../component/baseComponent.hpp"
 
 #include "../listeners/mouseButtonListener.hpp";
 
@@ -21,7 +21,7 @@
 
 
 namespace NLUI {
-    class Button : public Component, public MouseButtonListener {
+    class Button : public BaseComponent, public MouseButtonListener {
     private:
 
     protected:

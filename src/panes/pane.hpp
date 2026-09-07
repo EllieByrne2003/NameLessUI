@@ -10,7 +10,7 @@
 
 
 // Includes from project
-#include "../component/component.hpp"
+#include "../component/baseComponent.hpp"
 #include "../container/container.hpp"
 
 // Forward declarations
@@ -20,7 +20,7 @@
 
 
 namespace NLUI {
-    class Pane : public Component, public Container {
+    class Pane : public BaseComponent, public Container {
     private:
 
     protected:

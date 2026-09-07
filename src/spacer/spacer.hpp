@@ -10,7 +10,7 @@
 
 
 // Includes from project
-#include "../component/component.hpp"
+#include "../component/baseComponent.hpp"
 
 // Forward declarations
 
@@ -19,7 +19,7 @@
 
 
 namespace NLUI {
-    class Spacer final : public Component {
+    class Spacer final : public BaseComponent {
     private:
         glm::ivec2 prefSize;
 

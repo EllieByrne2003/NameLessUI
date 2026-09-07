@@ -19,7 +19,7 @@ using namespace glm;
 // Type aliases
 
 
-NLUI::Spacer::Spacer(const glm::ivec2 &prefSize, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : Component(minSize, maxSize),
+NLUI::Spacer::Spacer(const glm::ivec2 &prefSize, const glm::ivec2 &minSize, const glm::ivec2 &maxSize) : BaseComponent(minSize, maxSize),
     prefSize(prefSize) {
 
 }

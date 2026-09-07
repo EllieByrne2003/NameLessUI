@@ -18,7 +18,7 @@
 
 
 
-NLUI::Image::Image(const GLuint imageID, const glm::uvec2 &imageSize, const unsigned int magLimit, const unsigned int minLimit, const bool keepRatio) : Component(imageSize / minLimit, imageSize * magLimit),
+NLUI::Image::Image(const GLuint imageID, const glm::uvec2 &imageSize, const unsigned int magLimit, const unsigned int minLimit, const bool keepRatio) : BaseComponent(imageSize / minLimit, imageSize * magLimit),
     imageID(imageID), imageSize(imageSize), magLimit(magLimit), minLimit(minLimit), keepRatio(keepRatio) {
 
 }
@@ -53,7 +53,7 @@ std::shared_ptr<NLUI::Image> NLUI::Image::create(const std::filesystem::path &pa
 
 void NLUI::Image::draw() const {
     // TODO add a check for transparency (use nChannels from above)
-    Component::draw(); // Image might have transparency, so draw background colour
+    BaseComponent::draw(); // Image might have transparency, so draw background colour
 
     Graphics::drawTextureQuad(imageID, pos, size);
 }

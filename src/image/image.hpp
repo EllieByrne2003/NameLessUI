@@ -11,7 +11,7 @@
 #include <NLUT/files/textures.hpp>
 
 // Includes from project
-#include "../component/component.hpp"
+#include "../component/baseComponent.hpp"
 
 // Forward declarations
 
@@ -21,7 +21,7 @@ typedef unsigned int GLuint;
 
 
 namespace NLUI {
-    class Image : public Component {
+    class Image : public BaseComponent {
     private:
         const GLuint     imageID;
         const glm::uvec2 imageSize; // TODO might not need to keep this (maybe keep as preferred size)
