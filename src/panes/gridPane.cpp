@@ -783,7 +783,7 @@ void NLUI::GridPane::addComponent(const std::shared_ptr<Component> &component, c
         const std::shared_ptr<Component> &currentComponent = components[index(row, col, cols)]; // TODO add function to remove by index
 
         // If a component was there already, remove it
-        removeComponent(currentComponent);
+        removeComponent(currentComponent); // TODO better way to do this
 
         component->setParent(this);
         components[index(row, col, cols)] = component;
