@@ -1,3 +1,3 @@
-OBJS := boxPane.o flowPane.o gridPane.o pane.o
+OBJS := borderPane.o boxPane.o flowPane.o gridPane.o pane.o
 DIRS := 
 include $(SUB_MAKE_INCLUDE)
