@@ -779,6 +779,7 @@ void NLUI::GridPane::addComponent(const std::shared_ptr<Component> &component, c
     // Prevent nullptr from entering array, replace with a NullComponent
     if(component == nullptr) {
         addComponent(NullComponent::getInstance(), row, col);
+        return;
     }
 
     const std::shared_ptr<Component> &currentComponent = components[index(row, col, cols)]; // TODO add function to remove by index
