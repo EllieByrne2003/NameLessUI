@@ -35,7 +35,7 @@ int main() {
         return -1;
     }
 
-    std::shared_ptr<BorderPane> mainPane = BorderPane::create(true);
+    std::shared_ptr<BorderPane> mainPane = BorderPane::create(false);
     mainPane->setBackgroundColour(0.5, 0.5, 0.5);
 
     std::shared_ptr<Spacer> centre = Spacer::create(ivec2(100, 100), ivec2(50, 50));
