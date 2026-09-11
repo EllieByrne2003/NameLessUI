@@ -698,8 +698,6 @@ void NLUI::BorderPane::doLayout() {
         } else if(rowWidth > size.x) {
             if(rowWidth - rowExtraWidth <= size.x) {
                 // Remove proportionally
-                // TODO implement this
-
                 const int reduction = rowWidth - size.x;
 
                 centre()->shrinkWidth(reduction * (float(centre()->getExtraWidth()) / rowExtraWidth));
@@ -885,6 +883,7 @@ void NLUI::BorderPane::doLayout() {
                 totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
 
                 // Remove rounding errors
+                // TODO optimise and neaten this
                 if(totalWidth - size.x == 2) {
                     if(east()->getExtraWidth() > 0) {
                         east()->shrinkWidth(1);
@@ -1025,6 +1024,8 @@ void NLUI::BorderPane::doLayout() {
         int totalExtraHeight = std::max(0, totalHeight - totalMinHeight);
 
         if(totalHeight < size.y) {
+            // TODO properly comment this later
+            // TODO optimise this, no energy rn
             // Expand heights of north, centre, south
             centre()->growToHeight(size.y - north()->getHeight() - south()->getHeight());
             totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
@@ -1049,6 +1050,7 @@ void NLUI::BorderPane::doLayout() {
                 totalExtraHeight = std::max(0, totalHeight - totalMinHeight);
 
                 // Remove rounding errors
+                // TODO optimise and neaten this
                 if(totalHeight - size.y == 2) {
                     if(north()->getExtraHeight() > 0) {
                         north()->shrinkHeight(1);
@@ -1092,7 +1094,7 @@ void NLUI::BorderPane::doLayout() {
                     }
                 }
             } else {
-                // Set to mins
+                // Set to mins // TODO should have function to minimise component width
                 north()->shrinkToHeight(north()->getMinHeight());
                 centre()->shrinkToHeight(centre()->getMinHeight());
                 south()->shrinkToHeight(south()->getMinHeight());
@@ -1107,6 +1109,7 @@ void NLUI::BorderPane::doLayout() {
                 totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
 
                 // Remove rounding errors
+                // TODO optimise and neaten this
                 if(totalHeight - size.y == 2) {
                     if(north()->getHeight() > 0) {
                         north()->shrinkHeight(1);
