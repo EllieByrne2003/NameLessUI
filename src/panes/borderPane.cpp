@@ -526,26 +526,29 @@ void NLUI::BorderPane::doLayout() {
                 // Remove proporitonally
                 const int reduction = totalHeight - size.y;
 
-                north()->shrinkHeight(reduction * (float(north()->getExtraHeight() / float(totalExtraHeight))));
-                south()->shrinkHeight(reduction * (float(south()->getExtraHeight() / float(totalExtraHeight))));
+                north()->shrinkHeight(reduction * (float(north()->getExtraHeight()) / float(totalExtraHeight)));
+                south()->shrinkHeight(reduction * (float(south()->getExtraHeight()) / float(totalExtraHeight)));
 
                 centre()->shrinkToHeight(rowHeight - (reduction * (float(rowExtraHeight) / float(totalExtraHeight))));
-                east()->shrinkToHeight(  rowHeight - (reduction * (float(rowExtraHeight)   / float(totalExtraHeight))));
-                west()->shrinkToHeight(  rowHeight - (reduction * (float(rowExtraHeight)   / float(totalExtraHeight))));
+                east()->shrinkToHeight(  rowHeight - (reduction * (float(rowExtraHeight) / float(totalExtraHeight))));
+                west()->shrinkToHeight(  rowHeight - (reduction * (float(rowExtraHeight) / float(totalExtraHeight))));
 
-                rowHeight   = std::max(east()->getHeight(), std::max(centre()->getHeight(), west()->getHeight()));
+                rowHeight      = std::max(east()->getHeight(), std::max(centre()->getHeight(), west()->getHeight()));
+                rowExtraHeight = std::max(0, rowHeight - rowMinHeight);
+
                 totalHeight = north()->getHeight() + south()->getHeight() + rowHeight;
 
+                // Remove rounding errors
                 // TODO optimise and neaten this
                 if(totalHeight - size.y == 2) {
-                    if(north()->getHeight() > 0) {
+                    if(north()->getExtraHeight() > 0) {
                         north()->shrinkHeight(1);
                         totalHeight--;
 
-                        if(south()->getHeight() > 0) {
+                        if(south()->getExtraHeight() > 0) {
                             south()->shrinkHeight(1);
                             totalHeight--;
-                        } else if(centre()->getHeight() > 0) {
+                        } else if(rowExtraHeight > 0) {
                             centre()->shrinkToHeight(rowHeight - 1);
                             east()->shrinkToHeight(  rowHeight - 1);
                             west()->shrinkToHeight(  rowHeight - 1);
@@ -555,11 +558,11 @@ void NLUI::BorderPane::doLayout() {
                             north()->shrinkHeight(1);
                             totalHeight--;
                         }
-                    } else if(south()->getHeight() > 0) {
+                    } else if(south()->getExtraHeight() > 0) {
                         south()->shrinkHeight(1);
                         totalHeight--;
 
-                        if(centre()->getHeight() > 0) {
+                        if(rowExtraHeight > 0) {
                             centre()->shrinkToHeight(rowHeight - 1);
                             east()->shrinkToHeight(  rowHeight - 1);
                             west()->shrinkToHeight(  rowHeight - 1);
@@ -574,10 +577,10 @@ void NLUI::BorderPane::doLayout() {
                         rowHeight   -= 2;
                     }
                 } else if(totalHeight - size.y == 1) {
-                    if(north()->getHeight() > 0) {
+                    if(north()->getExtraHeight() > 0) {
                         north()->shrinkHeight(1);
                         totalHeight--;
-                    } else if(south()->getHeight() > 0) {
+                    } else if(south()->getExtraHeight() > 0) {
                         south()->shrinkHeight(1);
                         totalHeight--;
                     } else {
@@ -612,6 +615,60 @@ void NLUI::BorderPane::doLayout() {
 
                 rowHeight   = std::max(east()->getHeight(), std::max(centre()->getHeight(), west()->getHeight()));
                 totalHeight = north()->getHeight() + south()->getHeight() + rowHeight;
+
+                // Remove rounding errors
+                // TODO optimise and neaten this
+                if(totalHeight - size.y == 2) {
+                    if(north()->getHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(south()->getHeight() > 0) {
+                            south()->shrinkHeight(1);
+                            totalHeight--;
+                        } else if(rowHeight > 0) {
+                            centre()->shrinkToHeight(rowHeight - 1);
+                            east()->shrinkToHeight(  rowHeight - 1);
+                            west()->shrinkToHeight(  rowHeight - 1);
+                            totalHeight--;
+                            rowHeight--;
+                        } else {
+                            north()->shrinkHeight(1);
+                            totalHeight--;
+                        }
+                    } else if(south()->getHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(rowHeight > 0) {
+                            centre()->shrinkToHeight(rowHeight - 1);
+                            east()->shrinkToHeight(  rowHeight - 1);
+                            west()->shrinkToHeight(  rowHeight - 1);
+                            totalHeight--;
+                            rowHeight--;
+                        }
+                    } else {
+                        centre()->shrinkToHeight(rowHeight - 2);
+                        east()->shrinkToHeight(  rowHeight - 2);
+                        west()->shrinkToHeight(  rowHeight - 2);
+                        totalHeight -= 2;
+                        rowHeight   -= 2;
+                    }
+                } else if(totalHeight - size.y == 1) {
+                    if(north()->getHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+                    } else if(south()->getHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+                    } else {
+                        centre()->shrinkToHeight(rowHeight - 1);
+                        east()->shrinkToHeight(  rowHeight - 1);
+                        west()->shrinkToHeight(  rowHeight - 1);
+                        totalHeight--;
+                        rowHeight--;
+                    }
+                }
             }
         }
 
@@ -639,16 +696,123 @@ void NLUI::BorderPane::doLayout() {
             east()->growWidth(size.x - rowWidth);
             rowWidth = east()->getWidth() + centre()->getWidth() + west()->getWidth();
         } else if(rowWidth > size.x) {
-            if(rowWidth - rowExtraWidth > size.x) {
+            if(rowWidth - rowExtraWidth <= size.x) {
                 // Remove proportionally
                 // TODO implement this
+
+                const int reduction = rowWidth - size.x;
+
+                centre()->shrinkWidth(reduction * (float(centre()->getExtraWidth()) / rowExtraWidth));
+                east()->shrinkWidth(  reduction * (float(east()->getExtraWidth())   / rowExtraWidth));
+                west()->shrinkWidth(  reduction * (float(west()->getExtraWidth())   / rowExtraWidth));
+
+                rowWidth      = east()->getWidth() + centre()->getWidth() + west()->getWidth();
+                rowExtraWidth = std::max(0, rowWidth - rowMinWidth);
+
+                // Remove rounding errors
+                // TODO optimise and neaten this
+                if(rowWidth - size.x == 2) {
+                    if(east()->getExtraWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        rowWidth--;
+
+                        if(west()->getExtraWidth() > 0) {
+                            west()->shrinkWidth(1);
+                            rowWidth--;
+                        } else if(centre()->getExtraWidth() > 0) {
+                            centre()->shrinkWidth(1);
+                            rowWidth--;
+                        } else {
+                            east()->shrinkWidth(1);
+                            rowWidth--;
+                        }
+                    } else if(west()->getExtraWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        rowWidth--;
+
+                        if(centre()->getExtraWidth() > 0) {
+                            centre()->shrinkWidth(1);
+                            rowWidth--;
+                        } else {
+                            west()->shrinkWidth(1);
+                            rowWidth--;
+                        }
+                    } else {
+                        centre()->shrinkWidth(2);
+                        rowWidth -= 2;
+                    }
+                } else if(rowWidth - size.x == 1) {
+                    if(east()->getExtraWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        rowWidth--;
+                    } else if(west()->getExtraWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        rowWidth--;
+                    } else {
+                        centre()->shrinkWidth(1);
+                        rowWidth--;
+                    }
+                }
             } else {
-                // Set to mins
+                // Set to mins // TODO should have function to minimise component heights
+                centre()->shrinkToWidth(centre()->getMinWidth());
+                east()->shrinkToWidth(  east()->getMinWidth());
+                west()->shrinkToWidth(  west()->getMinWidth());
 
                 // Reduce below mins (proportionally)
+                rowWidth = east()->getWidth() + centre()->getWidth() + west()->getWidth();
+                const int reduction = rowWidth - size.x;
 
-                // TODO implement this
+                centre()->shrinkWidth(reduction * (float(centre()->getWidth()) / float(rowWidth)));
+                east()->shrinkWidth(  reduction * (float(east()->getWidth())   / float(rowWidth)));
+                west()->shrinkWidth(  reduction * (float(west()->getWidth())   / float(rowWidth)));
 
+                rowWidth = east()->getWidth() + centre()->getWidth() + west()->getWidth();
+
+                // Remove rounding errors
+                // TODO optimise and neaten this
+                if(rowWidth - size.x == 2) {
+                    if(east()->getWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        rowWidth--;
+
+                        if(west()->getWidth() > 0) {
+                            west()->shrinkWidth(1);
+                            rowWidth--;
+                        } else if(centre()->getWidth() > 0) {
+                            centre()->shrinkWidth(1);
+                            rowWidth--;
+                        } else {
+                            east()->shrinkWidth(1);
+                            rowWidth--;
+                        }
+                    } else if(west()->getWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        rowWidth--;
+
+                        if(centre()->getWidth() > 0) {
+                            centre()->shrinkWidth(1);
+                            rowWidth--;
+                        } else {
+                            west()->shrinkWidth(1);
+                            rowWidth--;
+                        }
+                    } else {
+                        centre()->shrinkWidth(2);
+                        rowWidth -= 2;
+                    }
+                } else if(rowWidth - size.x == 1) {
+                    if(east()->getWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        rowWidth--;
+                    } else if(west()->getWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        rowWidth--;
+                    } else {
+                        centre()->shrinkWidth(1);
+                        rowWidth--;
+                    }
+                }
             }
         }
 
