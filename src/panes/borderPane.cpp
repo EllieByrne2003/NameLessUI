@@ -831,7 +831,341 @@ void NLUI::BorderPane::doLayout() {
         centre()->setXPos(pos.x + west()->getWidth() + ((rowWidth - east()->getWidth() - west()->getWidth() - centre()->getWidth()) / 2));
         centre()->setYPos(pos.y + south()->getHeight() + ((rowHeight - centre()->getHeight()) / 2));
     } else {
-        // TODO implement this
+        east()->growToHeight(size.y);
+        west()->growToHeight(size.y);
+
+        for(std::shared_ptr<Component> &comp : components) {
+            comp->proposeWidth(size.x);
+        }
+
+        int colWidth   = std::max(north()->getWidth(), std::max(centre()->getWidth(), south()->getWidth()));
+        int totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+        int colMinWidth   = std::max(north()->getMinWidth(), std::max(centre()->getMinWidth(), south()->getMinWidth()));
+        int totalMinWidth = east()->getMinWidth() + west()->getMinWidth() + colMinWidth;
+
+        int colExtraWidth   = std::max(0, colWidth - colMinWidth);
+        int totalExtraWidth = std::max(0, totalWidth - totalMinWidth);
+
+        if(totalWidth < size.x) {
+            // Expand width of column and components
+            north()->growToWidth((size.x - totalWidth) + colWidth);
+            centre()->growToWidth((size.x - totalWidth) + colWidth);
+            south()->growToWidth((size.x - totalWidth) + colWidth);
+
+            colWidth = std::max(north()->getWidth(), std::max(centre()->getWidth(), south()->getWidth()));
+            totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+            // Give (extra + 1) / 2 to east
+            east()->growWidth(((size.x - totalWidth) + 1) / 2);
+            totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+            // Give extra to west
+            west()->growWidth(size.x - totalWidth);
+            totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+            // Give remaining to east
+            east()->growWidth(size.x - totalWidth);
+            totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+        } else if(totalWidth > size.x) {
+            if(totalWidth - totalExtraWidth <= size.x) {
+                // Remove proportionally
+                const int reduction = totalWidth - size.x;
+
+                east()->shrinkWidth(reduction * (float(east()->getExtraWidth()) / float(totalExtraWidth)));
+                west()->shrinkWidth(reduction * (float(west()->getExtraWidth()) / float(totalExtraWidth)));
+
+                north()->shrinkToWidth(colWidth - (reduction * (float(colExtraWidth) / float(totalExtraWidth))));
+                centre()->shrinkToWidth(colWidth - (reduction * (float(colExtraWidth) / float(totalExtraWidth))));
+                south()->shrinkToWidth(colWidth - (reduction * (float(colExtraWidth) / float(totalExtraWidth))));
+
+                colWidth      = std::max(north()->getWidth(), std::max(centre()->getWidth(), south()->getWidth()));
+                colExtraWidth = std::max(0, colWidth - colMinWidth);
+
+                totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+                // Remove rounding errors
+                if(totalWidth - size.x == 2) {
+                    if(east()->getExtraWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        totalWidth--;
+
+                        if(west()->getExtraWidth() > 0) {
+                            west()->shrinkWidth(1);
+                            totalWidth--;
+                        } else if(colExtraWidth > 0) {
+                            north()->shrinkToWidth(colWidth - 1);
+                            centre()->shrinkToWidth(colWidth - 1);
+                            south()->shrinkToWidth(colWidth - 1);
+                            totalWidth--;
+                            colWidth--;
+                        } else {
+                            east()->shrinkWidth(1);
+                            totalWidth--;
+                        }
+                    } else if(west()->getExtraWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        totalWidth--;
+
+                        if(colExtraWidth > 0) {
+                            north()->shrinkToWidth(colWidth - 1);
+                            centre()->shrinkToWidth(colWidth - 1);
+                            south()->shrinkToWidth(colWidth - 1);
+                            totalWidth--;
+                            colWidth--;
+                        }
+                    } else {
+                        north()->shrinkToWidth(colWidth - 2);
+                        centre()->shrinkToWidth(colWidth - 2);
+                        south()->shrinkToWidth(colWidth - 2);
+                        totalWidth -= 2;
+                        colWidth   -= 2;
+                    }
+                } else if(totalWidth - size.x == 1) {
+                    if(east()->getExtraWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        totalWidth--;
+                    } else if(west()->getExtraWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        totalWidth--;
+                    } else {
+                        north()->shrinkToWidth(colWidth - 1);
+                        centre()->shrinkToWidth(colWidth - 1);
+                        south()->shrinkToWidth(colWidth - 1);
+                        totalWidth--;
+                        colWidth--;
+                    }
+                }
+            } else {
+                // Set to mins
+                east()->shrinkToWidth(east()->getMinWidth());
+                west()->shrinkToWidth(west()->getMinWidth());
+
+                north()->shrinkToWidth(colMinWidth);
+                centre()->shrinkToWidth(colMinWidth);
+                south()->shrinkToWidth(colMinWidth);
+
+                // Set to below mins (proportionally)
+                colWidth   = std::max(north()->getWidth(), std::max(centre()->getWidth(), south()->getWidth()));
+                totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+                const int reduction = totalWidth - size.x;
+
+                east()->shrinkWidth(reduction * (float(east()->getWidth()) / float(totalWidth)));
+                west()->shrinkWidth(reduction * (float(west()->getWidth()) / float(totalWidth)));
+
+                north()->shrinkToWidth(colWidth - (reduction * (float(north()->getWidth()) / float(totalWidth))));
+                centre()->shrinkToWidth(colWidth - (reduction * (float(centre()->getWidth()) / float(totalWidth))));
+                south()->shrinkToWidth(colWidth - (reduction * (float(south()->getWidth()) / float(totalWidth))));
+
+                colWidth   = std::max(north()->getWidth(), std::max(centre()->getWidth(), south()->getWidth()));
+                totalWidth = east()->getWidth() + west()->getWidth() + colWidth;
+
+                // Remove rounding errors
+                if(totalWidth - size.x == 2) {
+                    if(east()->getWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        totalWidth--;
+
+                        if(west()->getWidth() > 0) {
+                            west()->shrinkWidth(1);
+                            totalWidth--;
+                        } else if(colWidth > 0) {
+                            north()->shrinkToWidth(colWidth - 1);
+                            centre()->shrinkToWidth(colWidth - 1);
+                            south()->shrinkToWidth(colWidth - 1);
+                            totalWidth--;
+                            colWidth--;
+                        } else {
+                            east()->shrinkWidth(1);
+                            totalWidth--;
+                        }
+                    } else if(west()->getWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        totalWidth--;
+
+                        if(colWidth > 0) {
+                            north()->shrinkToWidth(colWidth - 1);
+                            centre()->shrinkToWidth(colWidth - 1);
+                            south()->shrinkToWidth(colWidth - 1);
+                            totalWidth--;
+                            colWidth--;
+                        }
+                    } else {
+                        north()->shrinkToWidth(colWidth - 2);
+                        centre()->shrinkToWidth(colWidth - 2);
+                        south()->shrinkToWidth(colWidth - 2);
+                        totalWidth -= 2;
+                        colWidth   -= 2;
+                    }
+                } else if(totalWidth - size.x == 1) {
+                    if(east()->getWidth() > 0) {
+                        east()->shrinkWidth(1);
+                        totalWidth--;
+                    } else if(west()->getWidth() > 0) {
+                        west()->shrinkWidth(1);
+                        totalWidth--;
+                    } else {
+                        north()->shrinkToWidth(colWidth - 1);
+                        centre()->shrinkToWidth(colWidth - 1);
+                        south()->shrinkToWidth(colWidth - 1);
+                        totalWidth--;
+                        colWidth--;
+                    }
+                }
+            }
+        }
+
+        north()->proposeHeight(size.y);
+        centre()->proposeHeight(size.y);
+        south()->proposeHeight(size.y);
+
+        int totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+        int totalMinHeight = north()->getMinHeight() + centre()->getMinHeight() + south()->getMinHeight();
+        int totalExtraHeight = std::max(0, totalHeight - totalMinHeight);
+
+        if(totalHeight < size.y) {
+            // Expand heights of north, centre, south
+            centre()->growToHeight(size.y - north()->getHeight() - south()->getHeight());
+            totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+
+            north()->growHeight(((size.y - totalHeight) + 1) / 2);
+            totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+
+            south()->growHeight(size.y - totalHeight);
+            totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+
+            north()->growHeight(size.y - totalHeight);
+            totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+        } else if(totalHeight > size.y) {
+            if(totalHeight - totalExtraHeight <= size.y) {
+                const int reduction = totalHeight - size.y;
+
+                north()->shrinkHeight(reduction * (float(north()->getExtraHeight()) / float(totalExtraHeight)));
+                centre()->shrinkHeight(reduction * (float(centre()->getExtraHeight()) / float(totalExtraHeight)));
+                south()->shrinkHeight(reduction * (float(south()->getExtraHeight()) / float(totalExtraHeight)));
+
+                totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+                totalExtraHeight = std::max(0, totalHeight - totalMinHeight);
+
+                // Remove rounding errors
+                if(totalHeight - size.y == 2) {
+                    if(north()->getExtraHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(south()->getExtraHeight() > 0) {
+                            south()->shrinkHeight(1);
+                            totalHeight--;
+                        } else if(centre()->getExtraHeight() > 0) {
+                            centre()->shrinkHeight(1);
+                            totalHeight--;
+                        } else {
+                            north()->shrinkHeight(1);
+                            totalHeight--;
+                        }
+                    } else if(south()->getExtraHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(centre()->getExtraHeight() > 0) {
+                            centre()->shrinkHeight(1);
+                            totalHeight--;
+                        } else {
+                            south()->shrinkHeight(1);
+                            totalHeight--;
+                        }
+                    } else {
+                        centre()->shrinkHeight(2);
+                        totalHeight -= 2;
+                    }
+                } else if(totalHeight - size.y == 1) {
+                    if(north()->getExtraHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+                    } else if(south()->getExtraHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+                    } else {
+                        centre()->shrinkHeight(1);
+                        totalHeight--;
+                    }
+                }
+            } else {
+                // Set to mins
+                north()->shrinkToHeight(north()->getMinHeight());
+                centre()->shrinkToHeight(centre()->getMinHeight());
+                south()->shrinkToHeight(south()->getMinHeight());
+
+                totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+                const int reduction = totalHeight - size.y;
+
+                north()->shrinkHeight(reduction * (float(north()->getHeight()) / float(totalHeight)));
+                centre()->shrinkHeight(reduction * (float(centre()->getHeight()) / float(totalHeight)));
+                south()->shrinkHeight(reduction * (float(south()->getHeight()) / float(totalHeight)));
+
+                totalHeight = north()->getHeight() + centre()->getHeight() + south()->getHeight();
+
+                // Remove rounding errors
+                if(totalHeight - size.y == 2) {
+                    if(north()->getHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(south()->getHeight() > 0) {
+                            south()->shrinkHeight(1);
+                            totalHeight--;
+                        } else if(centre()->getHeight() > 0) {
+                            centre()->shrinkHeight(1);
+                            totalHeight--;
+                        } else {
+                            north()->shrinkHeight(1);
+                            totalHeight--;
+                        }
+                    } else if(south()->getHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+
+                        if(centre()->getHeight() > 0) {
+                            centre()->shrinkHeight(1);
+                            totalHeight--;
+                        } else {
+                            south()->shrinkHeight(1);
+                            totalHeight--;
+                        }
+                    } else {
+                        centre()->shrinkHeight(2);
+                        totalHeight -= 2;
+                    }
+                } else if(totalHeight - size.y == 1) {
+                    if(north()->getHeight() > 0) {
+                        north()->shrinkHeight(1);
+                        totalHeight--;
+                    } else if(south()->getHeight() > 0) {
+                        south()->shrinkHeight(1);
+                        totalHeight--;
+                    } else {
+                        centre()->shrinkHeight(1);
+                        totalHeight--;
+                    }
+                }
+            }
+        }
+
+        east()->setXPos(pos.x + size.x - east()->getWidth());
+        east()->setYPos(pos.y + ((size.y - east()->getHeight()) / 2));
+
+        west()->setXPos(pos.x);
+        west()->setYPos(pos.y + ((size.y - west()->getHeight()) / 2));
+
+        north()->setXPos(pos.x + west()->getWidth() + ((colWidth - north()->getWidth()) / 2));
+        north()->setYPos((pos.y + size.y) - north()->getHeight());
+
+        south()->setXPos(pos.x + west()->getWidth() + ((colWidth - south()->getWidth()) / 2));
+        south()->setYPos(pos.y);
+
+        centre()->setXPos(pos.x + west()->getWidth() + ((colWidth - centre()->getWidth()) / 2));
+        centre()->setYPos(pos.y + south()->getHeight());
     }
 }
 
