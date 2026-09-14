@@ -5,7 +5,7 @@
 #include <memory>
 
 // Includes from third party libraries
-
+#include <GLFW/glfw3.h>
 
 // Includes from personal libraries
 
@@ -406,20 +406,36 @@ int NLUI::BorderPane::getMaxHeight() const {
 
         return std::min(maxSize.y, greatestMaxHeight);
     }
-}    
+}
 
-bool NLUI::BorderPane::mouseInside(const double xPos, const double yPos) {
-    if(Pane::mouseInside(xPos, yPos)) {
-        for(const std::shared_ptr<Component> &component : components) {
-            if(component->mouseInside(xPos, yPos)) {
-                focus = component;
-                break; // Canm only be one anyways
+void NLUI::BorderPane::processMousePress(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMousePress(key, xPos, yPos);
+
+    clickFocus = NullComponent::getInstance(); // Assume none of them
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMousePress(key, xPos, yPos);
+
+            if(key == GLFW_MOUSE_BUTTON_LEFT) {
+                clickFocus = comp;
             }
-        }
 
-        return true;
-    } else {
-        return false;
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::BorderPane::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
+    BaseComponent::processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+    hoverFocus = NullComponent::getInstance(); // Assume none of them
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+            hoverFocus = comp;
+            break; // Can only be one
+        }
     }
 }
 
@@ -435,8 +451,12 @@ void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &compone
     if(pos != std::end(components)) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
-        if(focus == copy) {
-            focus = nullptr;
+        if(hoverFocus == copy) {
+            hoverFocus = NullComponent::getInstance();
+        }
+
+        if(clickFocus == copy) {
+            clickFocus = NullComponent::getInstance();
         }
     
         *pos = nullptr;
@@ -460,8 +480,12 @@ void NLUI::BorderPane::removeComponent(Component *const component) {
     if(pos != std::end(components)) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
-        if(focus == copy) {
-            focus = nullptr;
+        if(hoverFocus == copy) {
+            hoverFocus = NullComponent::getInstance();
+        }
+
+        if(clickFocus == copy) {
+            clickFocus = NullComponent::getInstance();
         }
     
         *pos = nullptr;
@@ -1178,8 +1202,12 @@ void NLUI::BorderPane::setComponent(const Position &pos, const std::shared_ptr<C
     } else {
         const std::shared_ptr<Component> copy = components[pos];
 
-        if(focus == copy) {
-            focus = nullptr;
+        if(hoverFocus == copy) {
+            hoverFocus = NullComponent::getInstance();
+        }
+
+        if(clickFocus == copy) {
+            clickFocus = NullComponent::getInstance();
         }
 
         component->setParent(this);

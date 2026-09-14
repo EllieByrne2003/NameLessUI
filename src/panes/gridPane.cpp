@@ -4,6 +4,8 @@
 #include <memory>
 
 // Includes from third party libraries
+#include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 using namespace glm;
 
@@ -429,20 +431,40 @@ int NLUI::GridPane::getMaxHeight() const {
     return std::min(maxSize.y, sumMaxHeight);
 }
     
-bool NLUI::GridPane::mouseInside(const double xPos, const double yPos) {
-    if(Pane::mouseInside(xPos, yPos)) {
-        for(int i = 0; i < rows * cols; i++) {
-            const std::shared_ptr<Component> &component = components[i];
+void NLUI::GridPane::processMousePress(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMousePress(key, xPos, yPos);
 
-            if(component->mouseInside(xPos, yPos)) {
-                focus = component;
-                break; // Can only be one anyways
+    clickFocus = NullComponent::getInstance(); // Assume none of them
+    // for(const std::shared_ptr<Component> &comp : components) {
+    for(int i = 0; i < rows * cols; i++) {
+        std::shared_ptr<Component> &comp = components[i];
+
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMousePress(key, xPos, yPos);
+
+            if(key == GLFW_MOUSE_BUTTON_LEFT) {
+                clickFocus = comp;
             }
-        }
 
-        return true;
-    } else {
-        return false;
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::GridPane::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
+    BaseComponent::processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+    hoverFocus = NullComponent::getInstance(); // Assume none of them
+    // for(const std::shared_ptr<Component> &comp : components) {
+    for(int i = 0; i < rows * cols; i++) {
+        std::shared_ptr<Component> &comp = components[i];
+
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+            hoverFocus = comp;
+            break; // Can only be one
+        }
     }
 }
 
@@ -455,8 +477,12 @@ void NLUI::GridPane::removeComponent(const std::shared_ptr<Component> &component
         if(components[i] == component) {
             const std::shared_ptr<Component> copy = components[i];
 
-            if(focus == copy) {
-                focus = nullptr;
+            if(hoverFocus == copy) {
+                hoverFocus = NullComponent::getInstance();
+            }
+
+            if(clickFocus == copy) {
+                clickFocus = NullComponent::getInstance();
             }
 
             components[i] = NullComponent::getInstance();
@@ -477,8 +503,12 @@ void NLUI::GridPane::removeComponent(Component *const component) {
         if(components[i].get() == component) {
             const std::shared_ptr<Component> copy = components[i];
 
-            if(focus == copy) {
-                focus = nullptr;
+            if(hoverFocus == copy) {
+                hoverFocus = NullComponent::getInstance();
+            }
+
+            if(clickFocus == copy) {
+                clickFocus = NullComponent::getInstance();
             }
 
             components[i] = NullComponent::getInstance();
