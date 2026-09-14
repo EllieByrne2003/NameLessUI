@@ -23,7 +23,7 @@ NLUI::NullComponent::NullComponent() : Component() {
 
 NLUI::NullComponent::~NullComponent() {
 
-};
+}
 
 std::shared_ptr<NLUI::NullComponent> & NLUI::NullComponent::getInstance() {
     static std::shared_ptr<NullComponent> instance(new NullComponent);
@@ -326,6 +326,79 @@ void NLUI::NullComponent::onResize() {
 
 bool NLUI::NullComponent::mouseInside(const double xPos, const double yPos) {
     return false;
+}
+
+
+void NLUI::NullComponent::addKeyListener(KeyListener *keyListener) {
+    return;
+}
+
+void NLUI::NullComponent::removeKeyListener(KeyListener *keyListener) {
+    return;
+}
+
+void NLUI::NullComponent::processKeyPress(const int key) {
+    return;
+}
+
+void NLUI::NullComponent::processKeyRepeat(const int key) {
+    return;
+}
+
+void NLUI::NullComponent::processKeyRelease(const int key) {
+    return;
+}
+
+void NLUI::NullComponent::addMouseButtonListener(MouseButtonListener *mouseButtonListener) {
+    return;
+}
+
+void NLUI::NullComponent::removeMouseButtonListener(MouseButtonListener *mouseButtonListener) {
+    return;
+}
+
+void NLUI::NullComponent::processMousePress(const int key, const double xPos, const double yPos) {
+    return;
+}
+
+void NLUI::NullComponent::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    return;
+}
+
+void NLUI::NullComponent::processMouseRelease(const int key, const double xPos, const double yPos) {
+    return;
+}
+
+void NLUI::NullComponent::addMouseMotionListener(MouseMotionListener *mouseMotionListener) {
+    return;
+}
+
+void NLUI::NullComponent::removeMouseMotionListener(MouseMotionListener *mouseMotionListener) {
+    return;
+}
+
+void NLUI::NullComponent::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
+    return;
+}
+
+void NLUI::NullComponent::processMouseEnter() {
+    return;
+}
+
+void NLUI::NullComponent::processMouseExit() {
+    return;
+}
+
+void NLUI::NullComponent::addMouseScrollListener(MouseScrollListener *mouseScrollListener) {
+    return;
+}
+
+void NLUI::NullComponent::removeMouseScrollListener(MouseScrollListener *mouseScrollListener) {
+    return;
+}
+
+void NLUI::NullComponent::processMouseScroll(const double deltaX, const double deltaY) {
+    return;
 }
 
 glm::vec4 NLUI::NullComponent::getBackgroundColour() const {
