@@ -324,7 +324,7 @@ void NLUI::NullComponent::onResize() {
     return;
 }
 
-bool NLUI::NullComponent::mouseInside(const double xPos, const double yPos) {
+bool NLUI::NullComponent::mouseInside(const double xPos, const double yPos) const {
     return false;
 }
 
