@@ -131,8 +131,8 @@ namespace NLUI {
         // Handle size changes
         virtual void onResize() = 0;
         
-        // For handling focus
-        virtual bool mouseInside(const double xPos, const double yPos) = 0;
+        // Small helper function
+        virtual bool mouseInside(const double xPos, const double yPos) const = 0;
 
         // Key listener and events handling
         virtual void addKeyListener(KeyListener *keyListener) = 0;

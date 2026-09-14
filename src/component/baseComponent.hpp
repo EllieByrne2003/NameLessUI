@@ -142,8 +142,8 @@ namespace NLUI {
         virtual int getXPos() const final;
         virtual int getYPos() const final;
         
-        // For handling focus
-        virtual bool mouseInside(const double xPos, const double yPos) override;        
+        // Small helper function
+        virtual bool mouseInside(const double xPos, const double yPos) const final;        
         
         // Key listener and events handling
         virtual void addKeyListener(KeyListener *keyListener) final;

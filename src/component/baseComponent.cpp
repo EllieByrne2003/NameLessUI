@@ -416,7 +416,7 @@ int NLUI::BaseComponent::getYPos() const {
     return pos.y;
 }
 
-bool NLUI::BaseComponent::mouseInside(const double xPos, const double yPos) {
+bool NLUI::BaseComponent::mouseInside(const double xPos, const double yPos) const {
     // Check minimum
     if(xPos < pos.x || yPos < pos.y) {
         return false;
