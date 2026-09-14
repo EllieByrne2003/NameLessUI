@@ -154,7 +154,7 @@ namespace NLUI {
         virtual void addMouseMotionListener(MouseMotionListener *mouseMotionListener) = 0;
         virtual void removeMouseMotionListener(MouseMotionListener *mouseMotionListener) = 0;
 
-        virtual void processMouseMovement(const double xPos, const double yPos) = 0;
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) = 0;
         virtual void processMouseEnter() = 0;
         virtual void processMouseExit() = 0;
         

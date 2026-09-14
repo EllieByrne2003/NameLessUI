@@ -343,7 +343,7 @@ void NLUI::Window::mouseReleased(const int key) {
 void NLUI::Window::mouseScrolled(const double deltaX, const double deltaY) {
     const std::vector<MouseScrollListener *> listenersCopy = mouseScrollListeners;
     for(MouseScrollListener *mouseScrollListener : listenersCopy) {
-        mouseScrollListener->mouseScrolled(deltaX, deltaY, mouseX, mouseY);
+        mouseScrollListener->mouseScrolled(deltaX, deltaY);
     }
 }
 

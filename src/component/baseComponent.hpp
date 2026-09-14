@@ -1,7 +1,7 @@
 #pragma once
 
 // Includes from standard
-
+#include <set>
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
@@ -27,10 +27,10 @@ namespace NLUI {
     private:
         glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-        std::vector<KeyListener *>         keyListeners;
-        std::vector<MouseButtonListener *> mouseButtonListeners;
-        std::vector<MouseMotionListener *> mouseMotionListeners;
-        std::vector<MouseScrollListener *> mouseScrollListeners;
+        std::set<KeyListener *>         keyListeners;
+        std::set<MouseButtonListener *> mouseButtonListeners;
+        std::set<MouseMotionListener *> mouseMotionListeners;
+        std::set<MouseScrollListener *> mouseScrollListeners;
 
     protected:
         Container *parent = nullptr;
@@ -165,7 +165,7 @@ namespace NLUI {
         virtual void addMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
         virtual void removeMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
 
-        virtual void processMouseMovement(const double xPos, const double yPos) override;
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) override;
         virtual void processMouseEnter() override;
         virtual void processMouseExit() override;
         
