@@ -483,7 +483,7 @@ bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
 }
 
 void NLUI::FlowPane::removeComponent(const std::shared_ptr<Component> &component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance()) {
         return;
     }
 
@@ -495,7 +495,7 @@ void NLUI::FlowPane::removeComponent(const std::shared_ptr<Component> &component
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
         if(focus == copy) {
-            focus = nullptr;
+            focus = NullComponent::getInstance();
         }
     
         components.erase(pos);
@@ -506,7 +506,7 @@ void NLUI::FlowPane::removeComponent(const std::shared_ptr<Component> &component
 }
 
 void NLUI::FlowPane::removeComponent(Component *const component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance().get()) {
         return;
     }
     
@@ -520,7 +520,7 @@ void NLUI::FlowPane::removeComponent(Component *const component) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
         if(focus == copy) {
-            focus = nullptr;
+            focus = NullComponent::getInstance();
         }
     
         components.erase(pos);
