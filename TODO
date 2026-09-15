@@ -21,3 +21,5 @@ Add padding variables to panes. Must be counted in max and pref sizes (as part o
 Reject null pointer in add component stuff
 
 Add proper guards to shrinkToX, growToY, etc
+
+Have remove component functions which can suppress layout calls (protected only, public always does so) (useful helper function)
