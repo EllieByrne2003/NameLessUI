@@ -10,6 +10,7 @@
 
 
 // Includes from project
+#include "../component/nullComponent.hpp"
 #include "../component/baseComponent.hpp"
 #include "../container/container.hpp"
 
@@ -24,7 +25,7 @@ namespace NLUI {
     private:
 
     protected:
-        std::shared_ptr<Component> focus = nullptr;
+        std::shared_ptr<Component> focus = NullComponent::getInstance();
 
     public:
 

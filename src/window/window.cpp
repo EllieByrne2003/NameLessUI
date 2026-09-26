@@ -236,9 +236,7 @@ void NLUI::Window::draw() {
     startDrawing();
     clear(); // TODO only do this sometimes
 
-    if(component != nullptr) {
-        component->draw();
-    }
+    component->draw();
 
     finishDrawing();
 }
@@ -348,9 +346,7 @@ void NLUI::Window::mouseScrolled(const double deltaX, const double deltaY) {
 }
 
 void NLUI::Window::windowResized(const int width, const int height) {
-    if(component != nullptr) {
-        component->setSize(width, height);
-    }
+    component->setSize(width, height);
 }
 
 void NLUI::Window::addKeyListener(KeyListener *keyListener) {
@@ -475,31 +471,23 @@ bool NLUI::Window::shouldClose() const {
 
 // TODO should this delete the current content or not?
 void NLUI::Window::setComponent(const std::shared_ptr<Component> &component) {
-    if(this->component != nullptr) {
-        this->component->removeParent();
-    }
-
     if(component == nullptr) {
-        this->component = component;
+        this->component = NullComponent::getInstance();
         return;
+    } else {
+        this->component->removeParent();
+    
+        component->setParent(this);
+        this->component = component;
+
+        component->setPos(0, 0);
+        component->setSize(this->getFrameBufferSize());
     }
-
-    component->setParent(this);
-    this->component = component;
-
-    // TODO handle minimum sizes
-    // const ivec2 minimumSize = component->getMinimumSize();
-    // glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    // glfwSetWindowSize(window, minimumSize.x, minimumSize.y);
-
-    component->setPos(0, 0);
-    component->setSize(this->getFrameBufferSize());
-    // component->resize();
 }
 
 void NLUI::Window::removeComponent(const std::shared_ptr<Component> &component) {
     if(component != nullptr && this->component == component) {
-        this->component = nullptr;
+        this->component = NullComponent::getInstance();
         component->removeParent();
     }
 }
@@ -508,7 +496,7 @@ void NLUI::Window::removeComponent(Component *const component) {
     if(component != nullptr && this->component.get() == component) {
         const std::shared_ptr<Component> copy = this->component;
 
-        this->component = nullptr;
+        this->component = NullComponent::getInstance();
         copy->removeParent();
     }
 }
@@ -518,16 +506,7 @@ void NLUI::Window::layoutRoot() {
 }
 
 void NLUI::Window::doLayout() {
-    if(component != nullptr) {
-        // const ivec2 minimumSize = component->getMinimumSize();
-
-        // // Ensure the component can fit in the space provided
-        // glfwSetWindowSizeLimits(window, minimumSize.x, minimumSize.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
-
-        // Call Give it the space it has and call resize
-        component->setSize(getFrameBufferSize());
-        // component->resize();
-    }
+    component->setSize(getFrameBufferSize());
 }
 
 bool intialiseGLFW(Logger &logger) {

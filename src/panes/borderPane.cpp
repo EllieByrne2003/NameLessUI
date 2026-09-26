@@ -424,7 +424,7 @@ bool NLUI::BorderPane::mouseInside(const double xPos, const double yPos) {
 }
 
 void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance()) {
         return;
     }
 
@@ -436,10 +436,10 @@ void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &compone
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
         if(focus == copy) {
-            focus = nullptr;
+            focus = NullComponent::getInstance();
         }
     
-        *pos = nullptr;
+        *pos = NullComponent::getInstance();
         copy->removeParent();
 
         layoutRoot();
@@ -447,7 +447,7 @@ void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &compone
 }
 
 void NLUI::BorderPane::removeComponent(Component *const component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance().get()) {
         return;
     }
     
@@ -461,10 +461,10 @@ void NLUI::BorderPane::removeComponent(Component *const component) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
         if(focus == copy) {
-            focus = nullptr;
+            focus = NullComponent::getInstance();
         }
     
-        *pos = nullptr;
+        *pos = NullComponent::getInstance();
         copy->removeParent();
 
         layoutRoot();
@@ -1179,7 +1179,7 @@ void NLUI::BorderPane::setComponent(const Position &pos, const std::shared_ptr<C
         const std::shared_ptr<Component> copy = components[pos];
 
         if(focus == copy) {
-            focus = nullptr;
+            focus = NullComponent::getInstance();
         }
 
         component->setParent(this);
