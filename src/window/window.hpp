@@ -36,6 +36,9 @@ namespace NLUI {
     private:
         GLFWwindow *const window;
 
+        int currentWidth;
+        int currentHeight;
+
         // Info needed to switch from fullscreen to windowed
         int windowedX;
         int windowedY;

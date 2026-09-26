@@ -63,6 +63,8 @@ NLUI::Window::Window(GLFWwindow *const window, const int windowedX, const int wi
     glfwSetKeyCallback(window, key_callback);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
+
+    glfwGetWindowSize(window, &currentWidth, &currentHeight);
 }
 
 NLUI::Window::~Window() {
@@ -273,25 +275,34 @@ void NLUI::Window::keyPressed(const int key) {
             setFullScreen();
         }
     } else {
-        const std::vector<KeyListener *> listenersCopy = keyListeners;
-        for(KeyListener *keyListener : listenersCopy) {
-            keyListener->keyPressed(key);
-        }
+        // TODO cleanup
+        // const std::vector<KeyListener *> listenersCopy = keyListeners;
+        // for(KeyListener *keyListener : listenersCopy) {
+        //     keyListener->keyPressed(key);
+        // }
+
+        component->processKeyPress(key);
     }
 }
 
 void NLUI::Window::keyRepeated(const int key) {
-    const std::vector<KeyListener *> listenersCopy = keyListeners;
-    for(KeyListener *keyListener : listenersCopy) {
-        keyListener->keyRepeated(key);
-    }
+    // TODO cleanup
+    // const std::vector<KeyListener *> listenersCopy = keyListeners;
+    // for(KeyListener *keyListener : listenersCopy) {
+    //     keyListener->keyRepeated(key);
+    // }
+
+    component->processKeyRepeat(key);
 }
 
 void NLUI::Window::keyReleased(const int key) {
-    const std::vector<KeyListener *> listenersCopy = keyListeners;
-    for(KeyListener *keyListener : listenersCopy) {
-        keyListener->keyReleased(key);
-    }
+    // TODO cleanup
+    // const std::vector<KeyListener *> listenersCopy = keyListeners;
+    // for(KeyListener *keyListener : listenersCopy) {
+    //     keyListener->keyReleased(key);
+    // }
+
+    component->processKeyRelease(key);
 }
 
 void NLUI::Window::mouseEntered() {
@@ -311,41 +322,59 @@ void NLUI::Window::mouseMoved(const double xPos, const double yPos) {
     mouseX = xPos;
     mouseY = yPos;
 
-    const std::vector<MouseMotionListener *> listenersCopy = mouseMotionListeners;
-    for(MouseMotionListener *mouseMotionListener : listenersCopy) {
-        mouseMotionListener->mouseMoved(xPos, yPos, deltaX, deltaY);
-    }
+    // TODO cleanup
+    // const std::vector<MouseMotionListener *> listenersCopy = mouseMotionListeners;
+    // for(MouseMotionListener *mouseMotionListener : listenersCopy) {
+    //     mouseMotionListener->mouseMoved(xPos, yPos, deltaX, deltaY);
+    // }
+
+    component->processMouseMovement(xPos, yPos, deltaX, deltaY);
 }
 
 void NLUI::Window::mousePressed(const int key) {
-    const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
-    for(MouseButtonListener *mouseButtonListener : listenersCopy) {
-        mouseButtonListener->mousePressed(key, mouseX, mouseY);
-    }
+    // TODO cleanup
+    // const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
+    // for(MouseButtonListener *mouseButtonListener : listenersCopy) {
+    //     mouseButtonListener->mousePressed(key, mouseX, mouseY);
+    // }
+
+    component->processMousePress(key, mouseX, mouseY);
 }
 
 void NLUI::Window::mouseRepeated(const int key) {
-    const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
-    for(MouseButtonListener *mouseButtonListener : listenersCopy) {
-        mouseButtonListener->mouseRepeated(key, mouseX, mouseY);
-    }
+    // TODO cleanup
+    // const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
+    // for(MouseButtonListener *mouseButtonListener : listenersCopy) {
+    //     mouseButtonListener->mouseRepeated(key, mouseX, mouseY);
+    // }
+
+    component->processMouseRepeat(key, mouseX, mouseY);
 }
 
 void NLUI::Window::mouseReleased(const int key) {
-    const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
-    for(MouseButtonListener *mouseButtonListener : listenersCopy) {
-        mouseButtonListener->mouseReleased(key, mouseX, mouseY);
-    }
+    // TODO cleanup
+    // const std::vector<MouseButtonListener *> listenersCopy = mouseButtonListeners;
+    // for(MouseButtonListener *mouseButtonListener : listenersCopy) {
+    //     mouseButtonListener->mouseReleased(key, mouseX, mouseY);
+    // }
+
+    component->processMouseRelease(key, mouseX, mouseY);
 }
 
 void NLUI::Window::mouseScrolled(const double deltaX, const double deltaY) {
-    const std::vector<MouseScrollListener *> listenersCopy = mouseScrollListeners;
-    for(MouseScrollListener *mouseScrollListener : listenersCopy) {
-        mouseScrollListener->mouseScrolled(deltaX, deltaY);
-    }
+    // TODO cleanup
+    // const std::vector<MouseScrollListener *> listenersCopy = mouseScrollListeners;
+    // for(MouseScrollListener *mouseScrollListener : listenersCopy) {
+    //     mouseScrollListener->mouseScrolled(deltaX, deltaY);
+    // }
+
+    component->processMouseScroll(deltaX, deltaY);
 }
 
 void NLUI::Window::windowResized(const int width, const int height) {
+    currentWidth = width;
+    currentHeight = height;
+
     component->setSize(width, height);
 }
 
@@ -410,31 +439,33 @@ void NLUI::Window::resize(const int width, const int height) {
 
 // TODO remove this maybe?
 void NLUI::Window::getSize(int &width, int &height) const {
-    glfwGetWindowSize(window, &width, &height);
+    // glfwGetWindowSize(window, &width, &height);
+    width  = currentWidth;
+    height = currentHeight;
 }
 
 ivec2 NLUI::Window::getSize() const {
-    ivec2 size;
+    // ivec2 size;
 
-    glfwGetWindowSize(window, &size.x, &size.y);
+    // glfwGetWindowSize(window, &size.x, &size.y);
 
-    return size;
+    return ivec2(currentWidth, currentHeight);
 }
 
 int NLUI::Window::getWidth() const {
-    int width;
+    // int width;
 
-    glfwGetWindowSize(window, &width, nullptr);
+    // glfwGetWindowSize(window, &width, nullptr);
 
-    return width;
+    return currentWidth;
 }
 
 int NLUI::Window::getHeight() const {
-    int height;
+    // int height;
 
-    glfwGetWindowSize(window, nullptr, &height);
+    // glfwGetWindowSize(window, nullptr, &height);
 
-    return height;
+    return currentHeight;
 }
 
 void NLUI::Window::getFrameBufferSize(int &width, int &height) const {
@@ -546,9 +577,9 @@ bool initialiseGLEW(Logger &logger, GLFWwindow *window) {
 
 // TODO implement
 void cursor_pos_callback(GLFWwindow *window, const double xpos, const double ypos) {
-   NLUI:: Window *w = (NLUI::Window *) glfwGetWindowUserPointer(window);
+    NLUI:: Window *w = (NLUI::Window *) glfwGetWindowUserPointer(window);
 
-    w->mouseMoved(xpos, ypos);
+    w->mouseMoved(xpos, w->getHeight() - ypos);
 }
 
 void cursor_enter_callback(GLFWwindow *window, const int entered) {
