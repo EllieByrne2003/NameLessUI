@@ -1,7 +1,7 @@
 #pragma once
 
 // Includes from standard
-
+#include <set>
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
@@ -26,6 +26,11 @@ namespace NLUI {
         friend class Container; // Can need to access private variables // TODO don't like this, but changes to window needed
     private:
         glm::vec4 backgroundColour = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+        std::set<KeyListener *>         keyListeners;
+        std::set<MouseButtonListener *> mouseButtonListeners;
+        std::set<MouseMotionListener *> mouseMotionListeners;
+        std::set<MouseScrollListener *> mouseScrollListeners;
 
     protected:
         Container *parent = nullptr;
@@ -137,8 +142,38 @@ namespace NLUI {
         virtual int getXPos() const final;
         virtual int getYPos() const final;
         
-        // For handling focus
-        virtual bool mouseInside(const double xPos, const double yPos) override;
+        // Small helper function
+        virtual bool mouseInside(const double xPos, const double yPos) const final;        
+        
+        // Key listener and events handling
+        virtual void addKeyListener(KeyListener *keyListener) final;
+        virtual void removeKeyListener(KeyListener *keyListener) final;
+
+        virtual void processKeyPress(const int key) override;
+        virtual void processKeyRepeat(const int key) override;
+        virtual void processKeyRelease(const int key) override;
+
+        // Mouse button listener and events handling
+        virtual void addMouseButtonListener(MouseButtonListener *mouseButtonListener) final;
+        virtual void removeMouseButtonListener(MouseButtonListener *mouseButtonListener) final;
+
+        virtual void processMousePress(const int key, const double xPos, const double yPos) override;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) override;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) override;
+        
+        // Mouse motion listener and events handling
+        virtual void addMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
+        virtual void removeMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
+
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) override;
+        virtual void processMouseEnter() override;
+        virtual void processMouseExit() override;
+        
+        // Mouse scroll listener and events handling
+        virtual void addMouseScrollListener(MouseScrollListener *mouseScrollListener) final;
+        virtual void removeMouseScrollListener(MouseScrollListener *mouseScrollListener) final;
+
+        virtual void processMouseScroll(const double deltaX, const double deltaY) override;
 
         // Coloured backgrounds
         virtual glm::vec4 getBackgroundColour() const final;

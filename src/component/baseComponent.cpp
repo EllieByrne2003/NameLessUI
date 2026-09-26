@@ -11,6 +11,11 @@ using namespace glm;
 
 
 // Includes from project
+#include "../listeners/keyListener.hpp"
+#include "../listeners/mouseButtonListener.hpp"
+#include "../listeners/mouseMotionListener.hpp"
+#include "../listeners/mouseScrollListener.hpp"
+
 #include "../container/container.hpp"
 #include "../graphics/shaders.hpp"
 
@@ -411,7 +416,7 @@ int NLUI::BaseComponent::getYPos() const {
     return pos.y;
 }
 
-bool NLUI::BaseComponent::mouseInside(const double xPos, const double yPos) {
+bool NLUI::BaseComponent::mouseInside(const double xPos, const double yPos) const {
     // Check minimum
     if(xPos < pos.x || yPos < pos.y) {
         return false;
@@ -423,6 +428,94 @@ bool NLUI::BaseComponent::mouseInside(const double xPos, const double yPos) {
     }
 
     return true;
+}
+
+void NLUI::BaseComponent::addKeyListener(KeyListener *keyListener) {
+    keyListeners.insert(keyListener);
+}
+
+void NLUI::BaseComponent::removeKeyListener(KeyListener *keyListener) {
+    keyListeners.erase(keyListener);    
+}
+
+void NLUI::BaseComponent::processKeyPress(const int key) {
+    for(KeyListener *listener : keyListeners) {
+        listener->keyPressed(key);
+    }
+}
+
+void NLUI::BaseComponent::processKeyRepeat(const int key) {
+    for(KeyListener *listener : keyListeners) {
+        listener->keyRepeated(key);
+    }    
+}
+
+void NLUI::BaseComponent::processKeyRelease(const int key) {
+    for(KeyListener *listener : keyListeners) {
+        listener->keyReleased(key);
+    }    
+}
+
+void NLUI::BaseComponent::addMouseButtonListener(MouseButtonListener *mouseButtonListener) {
+    mouseButtonListeners.insert(mouseButtonListener);
+}
+
+void NLUI::BaseComponent::removeMouseButtonListener(MouseButtonListener *mouseButtonListener) {
+    mouseButtonListeners.erase(mouseButtonListener);    
+}
+
+void NLUI::BaseComponent::processMousePress(const int key, const double xPos, const double yPos) {
+    for(MouseButtonListener *listener : mouseButtonListeners) {
+        listener->mousePressed(key, xPos, yPos);
+    }
+}
+
+void NLUI::BaseComponent::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    for(MouseButtonListener *listener : mouseButtonListeners) {
+        listener->mouseRepeated(key, xPos, yPos);
+    }
+}
+
+void NLUI::BaseComponent::processMouseRelease(const int key, const double xPos, const double yPos) {
+    for(MouseButtonListener *listener : mouseButtonListeners) {
+        listener->mouseReleased(key, xPos, yPos);
+    }
+}
+        
+void NLUI::BaseComponent::addMouseMotionListener(MouseMotionListener *mouseMotionListener) {
+    mouseMotionListeners.insert(mouseMotionListener);    
+}
+
+void NLUI::BaseComponent::removeMouseMotionListener(MouseMotionListener *mouseMotionListener) {
+    mouseMotionListeners.erase(mouseMotionListener);    
+}
+
+void NLUI::BaseComponent::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
+    for(MouseMotionListener *listener : mouseMotionListeners) {
+        listener->mouseMoved(xPos, yPos, deltaX, deltaY);
+    }
+}
+
+void NLUI::BaseComponent::processMouseEnter() {
+    // TODO Do I even need this?
+}
+
+void NLUI::BaseComponent::processMouseExit() {
+    // TODO Do I even need this?
+}
+        
+void NLUI::BaseComponent::addMouseScrollListener(MouseScrollListener *mouseScrollListener) {
+    mouseScrollListeners.insert(mouseScrollListener);    
+}
+
+void NLUI::BaseComponent::removeMouseScrollListener(MouseScrollListener *mouseScrollListener) {
+    mouseScrollListeners.erase(mouseScrollListener);    
+}
+
+void NLUI::BaseComponent::processMouseScroll(const double deltaX, const double deltaY) {
+    for(MouseScrollListener *listener : mouseScrollListeners) {
+        listener->mouseScrolled(deltaX, deltaY);
+    }
 }
 
 vec4 NLUI::BaseComponent::getBackgroundColour() const {

@@ -25,7 +25,9 @@ namespace NLUI {
     private:
 
     protected:
-        std::shared_ptr<Component> focus = NullComponent::getInstance();
+        // TODO change these to weak pointers or something
+        std::shared_ptr<Component> hoverFocus = NullComponent::getInstance();
+        std::shared_ptr<Component> clickFocus = NullComponent::getInstance();
 
     public:
 
@@ -43,6 +45,22 @@ namespace NLUI {
 
         // Overridden from Component
         virtual void onResize() override;
+
+        // Key events handling
+        virtual void processKeyPress(const int key) final;
+        virtual void processKeyRepeat(const int key) final;
+        virtual void processKeyRelease(const int key) final;
+
+        // Mouse button events handling
+        // virtual void processMouseRepeat(const int key, const double xPos, const double yPos) final;
+        // virtual void processMouseRelease(const int key, const double xPos, const double yPos) final;
+        
+        // Mouse motion events handling
+        virtual void processMouseEnter() final;
+        virtual void processMouseExit() final;
+        
+        // Mouse scroll events handling
+        virtual void processMouseScroll(const double deltaX, const double deltaY) override;
 
         // Override from Container
     };

@@ -6,6 +6,8 @@
 #include <vector>
 
 // Includes from third party libraries
+#include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 using namespace glm;
 
@@ -13,7 +15,7 @@ using namespace glm;
 
 
 // Includes from project
-
+#include "../component/nullComponent.hpp"
 
 // Forward declarations
 void shrinkRowHeight(const std::vector<std::shared_ptr<NLUI::Component>> &row, const int decHeight);
@@ -467,18 +469,58 @@ int NLUI::FlowPane::getMaxHeight() const {
     return std::min(maxSize.y, sumMaxHeight);
 }
 
-bool NLUI::FlowPane::mouseInside(const double xPos, const double yPos) {
-    if(Pane::mouseInside(xPos, yPos)) {
-        for(const std::shared_ptr<Component> &component : components) {
-            if(component->mouseInside(xPos, yPos)) {
-                focus = component;
-                break; // Can only be one anyways
-            }
-        }
+void NLUI::FlowPane::processMousePress(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMousePress(key, xPos, yPos);
 
-        return true;
-    } else {
-        return false;
+    clickFocus = NullComponent::getInstance(); // Assume none of them
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMousePress(key, xPos, yPos);
+
+            if(key == GLFW_MOUSE_BUTTON_LEFT) {
+                clickFocus = comp;
+            }
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::FlowPane::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRepeat(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRepeat(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::FlowPane::processMouseRelease(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRelease(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRelease(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::FlowPane::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
+    BaseComponent::processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+    hoverFocus = NullComponent::getInstance(); // Assume none of them
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseMovement(xPos, yPos, deltaX, deltaY);
+
+            hoverFocus = comp;
+            break; // Can only be one
+        }
     }
 }
 
@@ -494,8 +536,12 @@ void NLUI::FlowPane::removeComponent(const std::shared_ptr<Component> &component
     if(pos != components.end()) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
-        if(focus == copy) {
-            focus = NullComponent::getInstance();
+        if(hoverFocus == copy) {
+            hoverFocus = NullComponent::getInstance();
+        }
+
+        if(clickFocus == copy) {
+            clickFocus = NullComponent::getInstance();
         }
     
         components.erase(pos);
@@ -519,8 +565,12 @@ void NLUI::FlowPane::removeComponent(Component *const component) {
     if(pos != components.end()) {
         std::shared_ptr<Component> copy = *pos; // Stops delete from being called on component
 
-        if(focus == copy) {
-            focus = NullComponent::getInstance();
+        if(hoverFocus == copy) {
+            hoverFocus = NullComponent::getInstance();
+        }
+
+        if(clickFocus == copy) {
+            clickFocus = NullComponent::getInstance();
         }
     
         components.erase(pos);

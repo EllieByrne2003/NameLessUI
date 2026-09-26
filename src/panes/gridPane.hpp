@@ -21,7 +21,7 @@
 namespace NLUI {
     class GridPane : public Pane {
     private:
-        std::shared_ptr<Component> *components;
+        std::shared_ptr<Component> *components; // TODO replace this with std::array and stop using for(int i = 0; i < rows * cols...
 
         // TODO update this be unsigned and to have getters
         const int rows;
@@ -85,7 +85,13 @@ namespace NLUI {
         virtual int getMaxWidth() const override;
         virtual int getMaxHeight() const override;
         
-        virtual bool mouseInside(const double xPos, const double yPos) override;
+        // Mouse button events handling
+        virtual void processMousePress(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) final;
+
+        // Mouse motion events handling
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) final;
 
         // Override from Container
         virtual void removeComponent(const std::shared_ptr<Component> &component) override;

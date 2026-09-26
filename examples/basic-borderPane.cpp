@@ -46,17 +46,17 @@ int main() {
     north->setBackgroundColour(0.0, 0.25, 0.0);
     mainPane->setNorth(north);
 
-    // std::shared_ptr<Spacer> south = Spacer::create(ivec2(75, 50), ivec2(75, 50), ivec2(150, 150));
-    // south->setBackgroundColour(0.0, 0.0, 0.25);
-    // mainPane->setSouth(south);
+    std::shared_ptr<Spacer> south = Spacer::create(ivec2(75, 50), ivec2(75, 50), ivec2(150, 150));
+    south->setBackgroundColour(0.0, 0.0, 0.25);
+    mainPane->setSouth(south);
 
     std::shared_ptr<Spacer> east = Spacer::create(ivec2(100, 50), ivec2(50, 50), ivec2(150, 150));
     east->setBackgroundColour(0.25, 0.25, 0.0);
     mainPane->setEast(east);
 
-    // std::shared_ptr<Spacer> west = Spacer::create(ivec2(100, 50), ivec2(50, 50), ivec2(150, 150));
-    // west->setBackgroundColour(0.25, 0.0, 0.25);
-    // mainPane->setWest(west);
+    std::shared_ptr<Spacer> west = Spacer::create(ivec2(100, 50), ivec2(50, 50), ivec2(150, 150));
+    west->setBackgroundColour(0.25, 0.0, 0.25);
+    mainPane->setWest(west);
 
 
     window->setComponent(mainPane);

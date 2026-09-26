@@ -27,6 +27,6 @@ namespace NLUI {
     public:
         virtual ~MouseScrollListener() = 0;
 
-        virtual void mouseScrolled(const double deltaX, const double deltaY, const double xPos, const double yPos) = 0;
+        virtual void mouseScrolled(const double deltaX, const double deltaY) = 0;
     };
 };

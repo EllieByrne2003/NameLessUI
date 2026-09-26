@@ -131,7 +131,37 @@ namespace NLUI {
         virtual void onResize() final;
         
         // For handling focus
-        virtual bool mouseInside(const double xPos, const double yPos) final;
+        virtual bool mouseInside(const double xPos, const double yPos) const final;
+
+        // Key listener and events handling
+        virtual void addKeyListener(KeyListener *keyListener) final;
+        virtual void removeKeyListener(KeyListener *keyListener) final;
+
+        virtual void processKeyPress(const int key) final;
+        virtual void processKeyRepeat(const int key) final;
+        virtual void processKeyRelease(const int key) final;
+
+        // Mouse button listener and events handling
+        virtual void addMouseButtonListener(MouseButtonListener *mouseButtonListener) final;
+        virtual void removeMouseButtonListener(MouseButtonListener *mouseButtonListener) final;
+
+        virtual void processMousePress(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) final;
+        
+        // Mouse motion listener and events handling
+        virtual void addMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
+        virtual void removeMouseMotionListener(MouseMotionListener *mouseMotionListener) final;
+
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) final;
+        virtual void processMouseEnter() final;
+        virtual void processMouseExit() final;
+        
+        // Mouse scroll listener and events handling
+        virtual void addMouseScrollListener(MouseScrollListener *mouseScrollListener) final;
+        virtual void removeMouseScrollListener(MouseScrollListener *mouseScrollListener) final;
+
+        virtual void processMouseScroll(const double deltaX, const double deltaY) final;
 
         // Coloured backgrounds
         virtual glm::vec4 getBackgroundColour() const final;

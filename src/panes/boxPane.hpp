@@ -76,7 +76,13 @@ namespace NLUI {
         virtual int getMaxWidth() const override;
         virtual int getMaxHeight() const override;
         
-        virtual bool mouseInside(const double xPos, const double yPos) override;
+        // Mouse button events handling
+        virtual void processMousePress(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) final;
+
+        // Mouse motion events handling
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) final;
 
         // Override from Container
         virtual void removeComponent(const std::shared_ptr<Component> &component) override;

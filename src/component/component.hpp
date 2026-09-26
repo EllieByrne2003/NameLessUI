@@ -17,6 +17,10 @@ using Logger = NLUT::Logger;
 
 // Forward declarations
 namespace NLUI { class Container; };
+namespace NLUI { class KeyListener; };
+namespace NLUI { class MouseButtonListener; };
+namespace NLUI { class MouseMotionListener; };
+namespace NLUI { class MouseScrollListener; };
 
 // Type aliases
 typedef unsigned int GLuint;
@@ -127,8 +131,38 @@ namespace NLUI {
         // Handle size changes
         virtual void onResize() = 0;
         
-        // For handling focus
-        virtual bool mouseInside(const double xPos, const double yPos) = 0;
+        // Small helper function
+        virtual bool mouseInside(const double xPos, const double yPos) const = 0;
+
+        // Key listener and events handling
+        virtual void addKeyListener(KeyListener *keyListener) = 0;
+        virtual void removeKeyListener(KeyListener *keyListener) = 0;
+
+        virtual void processKeyPress(const int key) = 0;
+        virtual void processKeyRepeat(const int key) = 0;
+        virtual void processKeyRelease(const int key) = 0;
+
+        // Mouse button listener and events handling
+        virtual void addMouseButtonListener(MouseButtonListener *mouseButtonListener) = 0;
+        virtual void removeMouseButtonListener(MouseButtonListener *mouseButtonListener) = 0;
+
+        virtual void processMousePress(const int key, const double xPos, const double yPos) = 0;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) = 0;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) = 0;
+        
+        // Mouse motion listener and events handling
+        virtual void addMouseMotionListener(MouseMotionListener *mouseMotionListener) = 0;
+        virtual void removeMouseMotionListener(MouseMotionListener *mouseMotionListener) = 0;
+
+        virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) = 0;
+        virtual void processMouseEnter() = 0;
+        virtual void processMouseExit() = 0;
+        
+        // Mouse scroll listener and events handling
+        virtual void addMouseScrollListener(MouseScrollListener *mouseScrollListener) = 0;
+        virtual void removeMouseScrollListener(MouseScrollListener *mouseScrollListener) = 0;
+
+        virtual void processMouseScroll(const double deltaX, const double deltaY) = 0;
 
         // Coloured backgrounds
         virtual glm::vec4 getBackgroundColour() const = 0;
