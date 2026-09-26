@@ -486,6 +486,30 @@ void NLUI::FlowPane::processMousePress(const int key, const double xPos, const d
     }
 }
 
+void NLUI::FlowPane::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRepeat(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRepeat(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::FlowPane::processMouseRelease(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRelease(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRelease(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
 void NLUI::FlowPane::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
     BaseComponent::processMouseMovement(xPos, yPos, deltaX, deltaY);
 

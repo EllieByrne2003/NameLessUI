@@ -425,6 +425,30 @@ void NLUI::BorderPane::processMousePress(const int key, const double xPos, const
     }
 }
 
+void NLUI::BorderPane::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRepeat(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRepeat(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::BorderPane::processMouseRelease(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRelease(key, xPos, yPos);
+
+    for(const std::shared_ptr<Component> &comp : components) {
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRelease(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
 void NLUI::BorderPane::processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) {
     BaseComponent::processMouseMovement(xPos, yPos, deltaX, deltaY);
 

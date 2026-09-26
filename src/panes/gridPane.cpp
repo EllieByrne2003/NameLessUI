@@ -430,7 +430,7 @@ int NLUI::GridPane::getMaxHeight() const {
 
     return std::min(maxSize.y, sumMaxHeight);
 }
-    
+
 void NLUI::GridPane::processMousePress(const int key, const double xPos, const double yPos) {
     BaseComponent::processMousePress(key, xPos, yPos);
 
@@ -445,6 +445,36 @@ void NLUI::GridPane::processMousePress(const int key, const double xPos, const d
             if(key == GLFW_MOUSE_BUTTON_LEFT) {
                 clickFocus = comp;
             }
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::GridPane::processMouseRepeat(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRepeat(key, xPos, yPos);
+
+    // for(const std::shared_ptr<Component> &comp : components) {
+    for(int i = 0; i < rows * cols; i++) {
+        std::shared_ptr<Component> &comp = components[i];
+
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRepeat(key, xPos, yPos);
+
+            break; // Can only be one
+        }
+    }
+}
+
+void NLUI::GridPane::processMouseRelease(const int key, const double xPos, const double yPos) {
+    BaseComponent::processMouseRelease(key, xPos, yPos);
+
+    // for(const std::shared_ptr<Component> &comp : components) {
+    for(int i = 0; i < rows * cols; i++) {
+        std::shared_ptr<Component> &comp = components[i];
+
+        if(comp->mouseInside(xPos, yPos)) {
+            comp->processMouseRelease(key, xPos, yPos);
 
             break; // Can only be one
         }

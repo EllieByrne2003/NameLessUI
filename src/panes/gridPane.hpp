@@ -87,6 +87,8 @@ namespace NLUI {
         
         // Mouse button events handling
         virtual void processMousePress(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRepeat(const int key, const double xPos, const double yPos) final;
+        virtual void processMouseRelease(const int key, const double xPos, const double yPos) final;
 
         // Mouse motion events handling
         virtual void processMouseMovement(const double xPos, const double yPos, const double deltaX, const double deltaY) final;
