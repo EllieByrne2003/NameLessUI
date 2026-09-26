@@ -472,13 +472,13 @@ void NLUI::BaseComponent::processMousePress(const int key, const double xPos, co
 
 void NLUI::BaseComponent::processMouseRepeat(const int key, const double xPos, const double yPos) {
     for(MouseButtonListener *listener : mouseButtonListeners) {
-        listener->mousePressed(key, xPos, yPos);
+        listener->mouseRepeated(key, xPos, yPos);
     }
 }
 
 void NLUI::BaseComponent::processMouseRelease(const int key, const double xPos, const double yPos) {
     for(MouseButtonListener *listener : mouseButtonListeners) {
-        listener->mousePressed(key, xPos, yPos);
+        listener->mouseReleased(key, xPos, yPos);
     }
 }
         
