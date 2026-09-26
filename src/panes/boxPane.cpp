@@ -352,7 +352,7 @@ void NLUI::BoxPane::processMouseMovement(const double xPos, const double yPos, c
 }
 
 void NLUI::BoxPane::removeComponent(const std::shared_ptr<Component> &component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance()) {
         return;
     }
 
@@ -379,7 +379,7 @@ void NLUI::BoxPane::removeComponent(const std::shared_ptr<Component> &component)
 }
 
 void NLUI::BoxPane::removeComponent(Component *const component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance().get()) {
         return;
     }
     

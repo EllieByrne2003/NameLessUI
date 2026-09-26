@@ -10,6 +10,7 @@
 
 
 // Includes from project
+#include "../component/nullComponent.hpp"
 #include "../component/baseComponent.hpp"
 #include "../container/container.hpp"
 
@@ -24,6 +25,7 @@ namespace NLUI {
     private:
 
     protected:
+        // TODO change these to weak pointers or something
         std::shared_ptr<Component> hoverFocus = nullptr;
         std::shared_ptr<Component> clickFocus = nullptr;
 

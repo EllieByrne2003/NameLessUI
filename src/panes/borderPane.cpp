@@ -440,7 +440,7 @@ void NLUI::BorderPane::processMouseMovement(const double xPos, const double yPos
 }
 
 void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance()) {
         return;
     }
 
@@ -459,7 +459,7 @@ void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &compone
             clickFocus = NullComponent::getInstance();
         }
     
-        *pos = nullptr;
+        *pos = NullComponent::getInstance();
         copy->removeParent();
 
         layoutRoot();
@@ -467,7 +467,7 @@ void NLUI::BorderPane::removeComponent(const std::shared_ptr<Component> &compone
 }
 
 void NLUI::BorderPane::removeComponent(Component *const component) {
-    if(component == nullptr) {
+    if(component == nullptr || component == NullComponent::getInstance().get()) {
         return;
     }
     
@@ -488,7 +488,7 @@ void NLUI::BorderPane::removeComponent(Component *const component) {
             clickFocus = NullComponent::getInstance();
         }
     
-        *pos = nullptr;
+        *pos = NullComponent::getInstance();
         copy->removeParent();
 
         layoutRoot();

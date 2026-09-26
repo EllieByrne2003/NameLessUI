@@ -21,6 +21,8 @@ using Logger = NLUT::Logger;
 #include "../listeners/mouseScrollListener.hpp"
 
 #include "../component/component.hpp"
+#include "../component/nullComponent.hpp"
+
 #include "../container/container.hpp"
 
 // Forward declarations
@@ -50,7 +52,7 @@ namespace NLUI {
         std::vector<MouseScrollListener *> mouseScrollListeners;
 
         // Given component
-        std::shared_ptr<Component> component = nullptr;
+        std::shared_ptr<Component> component = NullComponent::getInstance();
 
     protected:
 

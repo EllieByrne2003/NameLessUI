@@ -469,7 +469,7 @@ void NLUI::GridPane::processMouseMovement(const double xPos, const double yPos, 
 }
 
 void NLUI::GridPane::removeComponent(const std::shared_ptr<Component> &component) {
-    if(component == NullComponent::getInstance()) {
+    if(component == nullptr || component == NullComponent::getInstance()) {
         return;
     }
     
@@ -495,7 +495,7 @@ void NLUI::GridPane::removeComponent(const std::shared_ptr<Component> &component
 }
 
 void NLUI::GridPane::removeComponent(Component *const component) {
-    if(component == NullComponent::getInstance().get()) {
+    if(component == nullptr || component == NullComponent::getInstance().get()) {
         return;
     }
 
