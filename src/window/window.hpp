@@ -2,7 +2,6 @@
 
 // Includes from standard
 #include <filesystem>
-#include <vector>
 
 // Includes from third party libraries
 #include <glm/glm.hpp>
@@ -14,12 +13,6 @@ using json = nlohmann::json;
 using Logger = NLUT::Logger;
 
 // Includes from project
-#include "../listeners/keyListener.hpp"
-#include "../listeners/mouseListener.hpp"
-#include "../listeners/mouseButtonListener.hpp"
-#include "../listeners/mouseMotionListener.hpp"
-#include "../listeners/mouseScrollListener.hpp"
-
 #include "../component/component.hpp"
 #include "../component/nullComponent.hpp"
 
@@ -47,12 +40,6 @@ namespace NLUI {
 
         bool mouseInside = false;
         double mouseX, mouseY;
-
-        // Event listeners
-        std::vector<KeyListener *>         keyListeners;
-        std::vector<MouseButtonListener *> mouseButtonListeners;
-        std::vector<MouseMotionListener *> mouseMotionListeners;
-        std::vector<MouseScrollListener *> mouseScrollListeners;
 
         // Given component
         std::shared_ptr<Component> component = NullComponent::getInstance();
@@ -104,15 +91,6 @@ namespace NLUI {
 
         // Window state changes
         void windowResized(const int width, const int height);
-
-        // Event listener handling 
-        // TODO Add methods to remove them
-        void addKeyListener(KeyListener *keyListener);
-
-        void addMouseListener(MouseListener *mouseListener);
-        void addMouseButtonListener(MouseButtonListener *mouseButtonListener);
-        void addMouseMotionListener(MouseMotionListener *mouseMotionListener);
-        void addMouseScrollListener(MouseScrollListener *mouseScrollListener);
 
         // Handling window size
         void setFullScreen();
